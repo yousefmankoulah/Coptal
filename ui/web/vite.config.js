@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          "https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/",
+          "",
         secure: false,
       },
     },

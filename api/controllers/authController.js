@@ -94,7 +94,7 @@ export const signin = async (req, res, next) => {
 };
 
 export const signinGoogle = async (req, res, next) => {
-  const { email, name, googlePhotoUrl } = req.body;
+  const { email, name } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user) {
@@ -119,7 +119,6 @@ export const signinGoogle = async (req, res, next) => {
         fullName: name,
         email,
         password: hashedPassword,
-        profilePicture: googlePhotoUrl,
       });
       await newUser.save();
       const token = jwt.sign(
@@ -153,7 +152,7 @@ export const signout = (req, res, next) => {
 };
 
 export const updateUser = async (req, res, next) => {
-  const { fullName, email, password, profilePicture } = req.body;
+  const { fullName, email, password } = req.body;
   const user = await User.findById(req.user.id);
 
   if (req.user.id === req.params._id) {
@@ -185,7 +184,6 @@ export const updateUser = async (req, res, next) => {
             fullName: req.body.fullName,
             email: req.body.email,
             password: req.body.password,
-            profilePicture: req.body.profilePicture,
           },
         },
         { new: true }

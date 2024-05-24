@@ -1,6 +1,7 @@
 import { errorHandler } from "../utils/error.js";
 import { Business } from "../models/businessModel.js";
 import { deleteFileFromStorage } from "../utils/firebaseConfig.js";
+import { User } from "../models/userModel.js";
 
 export const addBusiness = async (req, res, next) => {
   try {
@@ -17,7 +18,7 @@ export const addBusiness = async (req, res, next) => {
     }
 
     const business = new Business({
-      userId: req.params._id, // Assuming userId is available in req.params._id
+      userId: req.params._id,
       businessName,
       businessLogo,
       businessServices: businessServices.map((service) => ({
@@ -34,6 +35,14 @@ export const addBusiness = async (req, res, next) => {
     });
 
     const savedBusiness = await business.save();
+    const userInfo = await User.findById(userId);
+
+    if (!userInfo) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    userInfo.role = "business";
+    await userInfo.save();
     res.status(201).json(savedBusiness);
   } catch (err) {
     next(errorHandler(err, res));

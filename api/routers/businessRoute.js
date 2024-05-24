@@ -7,6 +7,13 @@ import {
   getAllBusiness,
   updateBusiness,
 } from "../controllers/businessController.js";
+import {
+  addRating,
+  deleteComment,
+  getAReview,
+  getBusinessReview,
+  updateComment,
+} from "../controllers/ratingController.js";
 
 const router = express.Router();
 
@@ -18,4 +25,11 @@ router.get("/getABusiness/:_id", getABusiness);
 router.get("/getAllBusiness/:businessCategory", getAllBusiness);
 
 //rating routes
+
+router.post("/addRating/:_id", verifyToken, addRating);
+router.put("/updateComment/:_id", verifyToken, updateComment);
+router.delete("/deleteComment/:_id", verifyToken, deleteComment);
+router.get("/getAReview/:_id", getAReview);
+router.get("getBusinessReview/:businessId", getBusinessReview);
+
 export default router;

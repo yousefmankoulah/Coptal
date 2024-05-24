@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          "",
+          "https://musical-space-eureka-9jjqvvrpp5rcpq59-3000.app.github.dev/",
         secure: false,
       },
     },

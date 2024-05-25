@@ -145,9 +145,7 @@ export const getABusiness = async (req, res, next) => {
 
 export const getAllBusiness = async (req, res, next) => {
   try {
-    const businesses = await Business.find({
-      businessCategory: req.params.businessCategory,
-    })
+    const businesses = await Business.find()
       .sort({ averageRating: -1 })
       .populate("businessCategory");
     res.json(businesses);

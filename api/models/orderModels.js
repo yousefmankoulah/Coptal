@@ -31,14 +31,15 @@ const OrderRequestSchema = new mongoose.Schema({
   offerPrice: {
     type: Number,
   },
-  confirmed: {
+  status: {
+    type: String,
+    enum: ["Accepted", "Canceled"],
+  },
+  paid: {
     type: Boolean,
     default: false,
   },
 });
-
-
-
 
 const OrderRequest = mongoose.model("OrderRequest", OrderRequestSchema);
 

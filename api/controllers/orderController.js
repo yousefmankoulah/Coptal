@@ -53,3 +53,35 @@ export const sendingRequest = async (req, res, next) => {
     next(errorHandler(res, err));
   }
 };
+
+export const orderRequestStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const orderRequestId = req.params._id;
+    const orderRequest = await OrderRequest.findById(orderRequestId);
+    if (!orderRequest) {
+      return res.status(404).json({ message: "Order request not found" });
+    }
+    if (orderRequest.status === "Canceled") {
+      return res
+        .status(400)
+        .json({ message: "Order request already rejected" });
+    }
+    if (orderRequest.status === "Accepted") {
+      return res
+        .status(400)
+        .json({ message: "Order request already accepted" });
+    }
+    if (status === true) {
+      orderRequest.status = "Accepted";
+    } else {
+      orderRequest.status = "Canceled";
+    }
+    await orderRequest.save();
+    res
+      .status(200)
+      .json({ message: "Order request status updated successfully" });
+  } catch (err) {
+    next(errorHandler(res, err));
+  }
+};

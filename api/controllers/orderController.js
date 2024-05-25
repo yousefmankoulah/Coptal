@@ -62,6 +62,14 @@ export const orderRequestStatus = async (req, res, next) => {
     if (!orderRequest) {
       return res.status(404).json({ message: "Order request not found" });
     }
+
+    if (orderRequest.userId !== req.user.id) {
+      return res
+        .status(403)
+        .json({
+          message: "You are not authorized to update this order request",
+        });
+    }
     if (orderRequest.status === "Canceled") {
       return res
         .status(400)

@@ -23,7 +23,7 @@ router.post("/addBusiness/:_id", verifyToken, addBusiness);
 router.put("/updateBusiness/:_id", verifyToken, updateBusiness);
 router.delete("/deleteBusiness/:_id", verifyToken, deleteBusiness);
 router.get("/getABusiness/:_id", getABusiness);
-router.get("/getAllBusiness/:businessCategory", getAllBusiness);
+router.get("/getAllBusiness", getAllBusiness);
 router.get("/search", getBusinessesByLocation);
 
 //rating routes

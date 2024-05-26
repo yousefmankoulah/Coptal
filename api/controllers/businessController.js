@@ -15,21 +15,35 @@ export const addBusiness = async (req, res, next) => {
       businessDescription,
       businessCategory,
     } = req.body;
+
     if (!businessName || !zipCode || !rangeInMiles || !businessCategory) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    const checkBusiness = await Business.findOne({
+      businessName: businessName,
+    });
+    if (checkBusiness) {
+      return res.status(400).json({ message: "Business already exists" });
+    }
+
     const coordinates = await getCoordinates(zipCode);
+
+    let mappedBusinessServices = [];
+    if (Array.isArray(businessServices)) {
+      // Map business services only if it's an array
+      mappedBusinessServices = businessServices.map((service) => ({
+        serviceName: service.serviceName,
+        minPrice: service.minPrice,
+        maxPrice: service.maxPrice,
+      }));
+    }
 
     const business = new Business({
       userId: req.params._id,
       businessName,
       businessLogo,
-      businessServices: businessServices.map((service) => ({
-        serviceName: service.serviceName,
-        minPrice: service.minPrice,
-        maxPrice: service.maxPrice,
-      })),
+      businessServices: mappedBusinessServices,
       businessDescription,
       servingArea: {
         zipCode: zipCode,
@@ -43,7 +57,8 @@ export const addBusiness = async (req, res, next) => {
     });
 
     const savedBusiness = await business.save();
-    const userInfo = await User.findById(userId);
+
+    const userInfo = await User.findById(req.params._id);
 
     if (!userInfo) {
       return res.status(404).json({ error: "User not found" });
@@ -53,7 +68,8 @@ export const addBusiness = async (req, res, next) => {
     await userInfo.save();
     res.status(201).json(savedBusiness);
   } catch (err) {
-    next(errorHandler(err, res));
+    console.error(err); // Log the error for better diagnosis
+    next(err); // Pass the error to the error handler
   }
 };
 
@@ -162,37 +178,58 @@ export const getAllBusiness = async (req, res, next) => {
   }
 };
 
-
 export const getBusinessesByLocation = async (req, res, next) => {
   try {
+    // Extract the zip code from the request query
     const { zipCode } = req.query;
 
+    // Check if the zip code is provided
     if (!zipCode) {
       return res.status(400).json({ message: "Zip code is required" });
     }
 
+    // Get the coordinates for the provided zip code
     const customerCoordinates = await getCoordinates(zipCode);
 
+    // Fetch all businesses from the database
     const businesses = await Business.find();
 
-    const filteredBusinesses = businesses
-      .map(business => {
-        if (!business.servingArea.zipCode || !business.servingArea.rangeInMiles) {
+    // Calculate distances and filter businesses based on range
+    const filteredBusinesses = await Promise.all(
+      businesses.map(async (business) => {
+        if (
+          !business.servingArea.zipCode ||
+          !business.servingArea.rangeInMiles
+        ) {
           return null;
         }
 
-        const businessCoordinates = getCoordinates(business.servingArea.zipCode);
+        // Get coordinates for the business's zip code
+        const businessCoordinates = await getCoordinates(
+          business.servingArea.zipCode
+        );
+
+        // Calculate distance between customer and business coordinates
         const distance = getDistance(customerCoordinates, businessCoordinates);
 
         return {
           business,
-          distance
+          distance,
         };
       })
-      .filter(b => b && b.distance <= (b.business.servingArea.rangeInMiles * 1609.34)) // Convert range to meters
+    );
+
+    // Filter out null values and businesses outside of range
+    const validBusinesses = filteredBusinesses
+      .filter(
+        (b) => b && b.distance <= b.business.servingArea.rangeInMiles * 1609.34
+      ) // Convert range to meters
       .sort((a, b) => a.distance - b.distance);
 
-    res.json(filteredBusinesses.map(b => b.business));
+    // Extract only business data without distance
+    const businessesData = validBusinesses.map((b) => b.business);
+
+    res.json(businessesData);
   } catch (error) {
     next(errorHandler(error, res));
   }

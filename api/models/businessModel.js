@@ -17,6 +17,7 @@ const businessSchema = new mongoose.Schema(
     businessName: {
       type: String,
       required: true,
+      unique: true,
     },
 
     businessLogo: {
@@ -27,15 +28,12 @@ const businessSchema = new mongoose.Schema(
       {
         serviceName: {
           type: String,
-          required: true,
         },
         minPrice: {
           type: Number,
-          required: true,
         },
         maxPrice: {
           type: Number,
-          required: true,
         },
       },
     ],
@@ -60,7 +58,7 @@ const businessSchema = new mongoose.Schema(
 
     servingArea: {
       zipCode: {
-        type: String,
+        type: Number,
         required: true,
       },
       rangeInMiles: {
@@ -68,7 +66,7 @@ const businessSchema = new mongoose.Schema(
         required: true,
       },
       location: {
-        type: { type: String, enum: ['Point'], required: true },
+        type: { type: String, enum: ["Point"], required: true },
         coordinates: { type: [Number], required: true },
       },
     },

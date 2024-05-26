@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import helmet from "helmet";
+import authRoute from "./routers/authRoute.js";
+import businessRoute from "./routers/businessRoute.js";
+import orderRoute from "./routers/orderRoute.js";
 
 dotenv.config();
 
@@ -32,6 +35,10 @@ app.listen(3000, () => {
 });
 
 //Routes
+
+app.use("/api/auth", authRoute);
+app.use("/api/business", businessRoute);
+app.use("/api/order", orderRoute);
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

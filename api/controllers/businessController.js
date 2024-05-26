@@ -2,6 +2,7 @@ import { errorHandler } from "../utils/error.js";
 import { Business } from "../models/businessModel.js";
 import { deleteFileFromStorage } from "../utils/firebaseConfig.js";
 import { User } from "../models/userModel.js";
+import { getCoordinates, getDistance } from "../utils/geolocation.js";
 
 export const addBusiness = async (req, res, next) => {
   try {
@@ -9,13 +10,16 @@ export const addBusiness = async (req, res, next) => {
       businessName,
       businessLogo,
       businessServices,
-      servingArea,
+      zipCode,
+      rangeInMiles,
       businessDescription,
       businessCategory,
     } = req.body;
-    if (!businessName || !servingArea || !businessCategory) {
+    if (!businessName || !zipCode || !rangeInMiles || !businessCategory) {
       return res.status(400).json({ message: "Missing required fields" });
     }
+
+    const coordinates = await getCoordinates(zipCode);
 
     const business = new Business({
       userId: req.params._id,
@@ -28,8 +32,12 @@ export const addBusiness = async (req, res, next) => {
       })),
       businessDescription,
       servingArea: {
-        zipCode: servingArea.zipCode,
-        rangeInMiles: servingArea.rangeInMiles,
+        zipCode: zipCode,
+        rangeInMiles: rangeInMiles,
+        location: {
+          type: "Point",
+          coordinates: [coordinates.longitude, coordinates.latitude],
+        },
       },
       businessCategory,
     });
@@ -151,5 +159,41 @@ export const getAllBusiness = async (req, res, next) => {
     res.json(businesses);
   } catch (err) {
     next(errorHandler(err, res));
+  }
+};
+
+
+export const getBusinessesByLocation = async (req, res, next) => {
+  try {
+    const { zipCode } = req.query;
+
+    if (!zipCode) {
+      return res.status(400).json({ message: "Zip code is required" });
+    }
+
+    const customerCoordinates = await getCoordinates(zipCode);
+
+    const businesses = await Business.find();
+
+    const filteredBusinesses = businesses
+      .map(business => {
+        if (!business.servingArea.zipCode || !business.servingArea.rangeInMiles) {
+          return null;
+        }
+
+        const businessCoordinates = getCoordinates(business.servingArea.zipCode);
+        const distance = getDistance(customerCoordinates, businessCoordinates);
+
+        return {
+          business,
+          distance
+        };
+      })
+      .filter(b => b && b.distance <= (b.business.servingArea.rangeInMiles * 1609.34)) // Convert range to meters
+      .sort((a, b) => a.distance - b.distance);
+
+    res.json(filteredBusinesses.map(b => b.business));
+  } catch (error) {
+    next(errorHandler(error, res));
   }
 };

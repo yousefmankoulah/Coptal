@@ -67,6 +67,10 @@ const businessSchema = new mongoose.Schema(
         type: Number,
         required: true,
       },
+      location: {
+        type: { type: String, enum: ['Point'], required: true },
+        coordinates: { type: [Number], required: true },
+      },
     },
 
     businessCategory: {

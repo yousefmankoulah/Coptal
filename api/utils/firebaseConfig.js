@@ -2,17 +2,17 @@ import admin from "firebase-admin";
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 
-import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
+// import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 
 const firebaseConfig = {
-  credential: admin.credential.cert(serviceAccount),
+  // credential: admin.credential.cert(serviceAccount),
   apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: "onlinecoaching-a87c5.firebaseapp.com",
-  projectId: "onlinecoaching-a87c5",
-  storageBucket: "onlinecoaching-a87c5.appspot.com",
-  messagingSenderId: "855843127316",
-  appId: "1:855843127316:web:70571f4f0ed562ce37a701",
-  measurementId: "G-EN8D3PYZNZ",
+  authDomain: "coptal.firebaseapp.com",
+  projectId: "coptal",
+  storageBucket: "coptal.appspot.com",
+  messagingSenderId: "110791226203",
+  appId: "1:110791226203:web:a73e531d98a021b7ba607e",
+  measurementId: "G-9B54VC1C5G",
 };
 
 // Initialize Firebase
@@ -30,7 +30,5 @@ const deleteFileFromStorage = async (filePath) => {
     console.error("Error deleting file:", error);
   }
 };
-
-
 
 export { app, deleteFileFromStorage };

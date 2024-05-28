@@ -102,9 +102,9 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="flex gap-2 md:order-2">
+        <div className="flex gap-2 items-center md:order-2">
           <Button
-            className="w-12 h-10 hidden sm:flex items-center justify-center"
+            className="w-12 h-10 sm:flex items-center justify-center"
             color="gray"
             pill
             onClick={() => dispatch(toggleTheme())}

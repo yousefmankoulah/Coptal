@@ -38,57 +38,57 @@ export default function Header() {
     }
   };
 
-  useEffect(() => {
-    // Function to handle click outside notification area
-    const handleClickOutside = (event) => {
-      if (
-        notificationRef.current &&
-        !notificationRef.current.contains(event.target)
-      ) {
-        setShowModal(false); // Hide the notification modal only if clicked outside
-      }
-    };
-    // Add event listener when the component mounts
-    document.addEventListener("mousedown", handleClickOutside);
+  //   useEffect(() => {
+  //     // Function to handle click outside notification area
+  //     const handleClickOutside = (event) => {
+  //       if (
+  //         notificationRef.current &&
+  //         !notificationRef.current.contains(event.target)
+  //       ) {
+  //         setShowModal(false); // Hide the notification modal only if clicked outside
+  //       }
+  //     };
+  //     // Add event listener when the component mounts
+  //     document.addEventListener("mousedown", handleClickOutside);
 
-    // Clean up by removing the event listener when the component unmounts
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  //     // Clean up by removing the event listener when the component unmounts
+  //     return () => {
+  //       document.removeEventListener("mousedown", handleClickOutside);
+  //     };
+  //   }, []);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        if (currentUser && currentUser._id) {
-          const url =
-            currentUser.role === "coach"
-              ? `https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/api/auth/notifyCoach/${currentUser._id}`
-              : `https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/api/auth/notifyCustomer/${currentUser.userId}/${currentUser._id}`;
-          const res = await fetch(url, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const data = await res.json();
-          if (res.ok) {
-            // Filter notifications to show only unread notifications
-            const unreadNotifications = data.filter(
-              (notification) => !notification.status
-            );
-            setNotification(unreadNotifications);
-          } else {
-            // Handle unauthorized access or other errors
-            console.error("Error fetching customers:", data.message);
-          }
-        }
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
+  //   useEffect(() => {
+  //     const fetchNotifications = async () => {
+  //       try {
+  //         if (currentUser && currentUser._id) {
+  //           const url =
+  //             currentUser.role === "coach"
+  //               ? `https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/api/auth/notifyCoach/${currentUser._id}`
+  //               : `https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/api/auth/notifyCustomer/${currentUser.userId}/${currentUser._id}`;
+  //           const res = await fetch(url, {
+  //             headers: {
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           });
+  //           const data = await res.json();
+  //           if (res.ok) {
+  //             // Filter notifications to show only unread notifications
+  //             const unreadNotifications = data.filter(
+  //               (notification) => !notification.status
+  //             );
+  //             setNotification(unreadNotifications);
+  //           } else {
+  //             // Handle unauthorized access or other errors
+  //             console.error("Error fetching customers:", data.message);
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.log(error.message);
+  //       }
+  //     };
 
-    fetchNotifications();
-  }, [currentUser]);
+  //     fetchNotifications();
+  //   }, [currentUser]);
 
   return (
     <>
@@ -98,51 +98,38 @@ export default function Header() {
           className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
         >
           <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-            Cop
+            Coptal
           </span>
-          tal
         </Link>
 
         <div className="flex gap-2 md:order-2">
           <Button
-            className="w-12 h-10 hidden sm:inline"
+            className="w-12 h-10 hidden sm:flex items-center justify-center"
             color="gray"
             pill
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
             onClick={() => dispatch(toggleTheme())}
           >
             <span className="text-xl">
               {theme === "light" ? <FaSun /> : <FaMoon />}
             </span>
           </Button>
-          {currentUser && (
+          {/* {currentUser && (
             <Button
-              className="w-12 h-10 hidden sm:inline"
+              className="w-12 h-10 hidden sm:flex items-center justify-center"
               color="gray"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
               pill
-              onClick={() => {
-                setShowModal(true);
-              }}
+              onClick={() => setShowModal(true)}
             >
               <span className="text-xl">
                 <HiOutlineBellAlert />
               </span>
-              {notification.length > 0 && (
+               {notification.length > 0 && (
                 <div className="absolute -top-1 -right-1 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-white text-sm">
                   {notification.length}
                 </div>
-              )}
+              )} 
             </Button>
-          )}
+          )} */}
 
           {currentUser ? (
             <Dropdown
@@ -165,12 +152,10 @@ export default function Header() {
               <Link to={`/profile/${currentUser._id}`}>
                 <Dropdown.Item>Profile</Dropdown.Item>
               </Link>
-              <Link to={`/update-coach/${currentUser._id}`}>
-                <Dropdown.Item>Update Your Profile</Dropdown.Item>
-              </Link>
-              )}
               <Dropdown.Divider />
-              <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
+              <Dropdown.Item onClick={() => dispatch(handleSignout())}>
+                Sign out
+              </Dropdown.Item>
             </Dropdown>
           ) : (
             <Link to="/sign-in">
@@ -181,6 +166,7 @@ export default function Header() {
           )}
           <Navbar.Toggle />
         </div>
+
         <Navbar.Collapse>
           <Navbar.Link active={path === "/"}>
             <Link className="text-white" to="/">
@@ -188,36 +174,13 @@ export default function Header() {
             </Link>
           </Navbar.Link>
 
-          {currentUser?.role === "coach" && (
-            <Navbar.Link active={path === "/plans"}>
-              <Link className="text-white" to="/plans">
-                Plans
-              </Link>
-            </Navbar.Link>
-          )}
-          {currentUser ? (
-            <Navbar.Link active={path === `/dashboard/${userId}`}>
-              <Link className="text-white" to={`/dashboard/${userId}`}>
-                Dashboard
-              </Link>
-            </Navbar.Link>
-          ) : (
-            <>
-              <Navbar.Link active={path === "/plans"}>
-                <Link className="text-white" to="/plans">
-                  Plans
-                </Link>
-              </Navbar.Link>
+          <Navbar.Link active={path === "/aboutus"}>
+            <Link className="text-white" to="/aboutus">
+              About Us
+            </Link>
+          </Navbar.Link>
 
-              <Navbar.Link active={path === "/aboutus"}>
-                <Link className="text-white" to="/aboutus">
-                  About Us
-                </Link>
-              </Navbar.Link>
-            </>
-          )}
-
-          <Navbar.Link active={path === "/contactus"} as={"div"}>
+          <Navbar.Link active={path === "/contactus"}>
             <Link className="text-white" to="/contactus">
               Contact Us
             </Link>
@@ -225,11 +188,11 @@ export default function Header() {
         </Navbar.Collapse>
       </Navbar>
 
-      {showModal && (
+      {/* {showModal && (
         <div className="notification-modal" ref={notificationRef}>
           <Notification />
         </div>
-      )}
+      )} */}
     </>
   );
 }

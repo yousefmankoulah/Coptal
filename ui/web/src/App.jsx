@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-
 import ScrollToTop from "./components/ScrollToTop";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,6 +10,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/AboutUs";
+import AddBusiness from "./pages/AddBusiness";
 
 function App() {
   return (
@@ -27,7 +27,9 @@ function App() {
 
         <Route element={<OnlyAdminPrivateRoute />}></Route>
 
-        <Route element={<PrivateRoute />}></Route>
+        <Route element={<PrivateRoute />}>
+          <Route path="/addBusiness" element={<AddBusiness />} />
+        </Route>
       </Routes>
 
       <Footer />

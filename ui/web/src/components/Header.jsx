@@ -174,17 +174,18 @@ export default function Header() {
             </Link>
           </Navbar.Link>
 
-          <Navbar.Link active={path === "/aboutus"}>
-            <Link className="text-white" to="/aboutus">
-              About Us
-            </Link>
-          </Navbar.Link>
-
           <Navbar.Link active={path === "/contactus"}>
             <Link className="text-white" to="/contactus">
               Contact Us
             </Link>
           </Navbar.Link>
+          {currentUser && (
+            <Navbar.Link active={path === "/addBusiness"}>
+            <Link className="text-white" to="/addBusiness">
+              Add Business
+            </Link>
+          </Navbar.Link>
+          )}
         </Navbar.Collapse>
       </Navbar>
 

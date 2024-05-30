@@ -175,18 +175,25 @@ export default function AddBusiness() {
     }
   };
 
-  const handleNext = async () => {
+
+  
+  const handleNext = async (e) => {
+    e.preventDefault();
     if (currentStep === 0) {
       const nameExists = await checkBusinessNameExists(formData.businessName);
       if (nameExists) {
         setBusinessNameExists(true);
         return;
       } else {
-        setBusinessNameExists(false); // Reset if name is not duplicate
+        setBusinessNameExists(false); 
       }
     }
-    setCurrentStep((prevStep) => prevStep + 1);
+  
+   
+      setCurrentStep((prevStep) => prevStep + 1);
+    
   };
+  
   
   const handlePrev = () => {
     setCurrentStep((prevStep) => prevStep - 1);
@@ -236,7 +243,7 @@ export default function AddBusiness() {
         <div>
             
       {currentStep === 0 && (
-        <div className="text-center w-1/2 mx-auto sm:w-full xs:w-full">
+        <div className="text-center w-1/2 mx-auto sm:w-full ">
        
           <Label value="Business Name" />
           <TextInput
@@ -405,7 +412,7 @@ export default function AddBusiness() {
           <Label value="Zip Code" />
           <TextInput
             id="zipCode"
-            type="text"
+            type="number"
             name="zipCode"
             placeholder="Your business zip code"
             onChange={handleZipCodeChange}
@@ -439,7 +446,7 @@ export default function AddBusiness() {
             step={1}
             value={formData.rangeInMiles} 
             onChange={handleChange}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mb-4 mt-2"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mb-6 mt-2"
             style={{
               backgroundSize: `${((formData.rangeInMiles - 1) * 100) / 99}% 100%`,
               background:
@@ -457,10 +464,9 @@ export default function AddBusiness() {
           <Textarea
             id="businessDescription"
             name="businessDescription"
-            placeholder="Describe your business"
+            placeholder="Describe your business without adding any address, phone number, or email address."
             onChange={handleChange}
             value={formData.businessDescription}
-            
           />
         </div>
       ),
@@ -488,6 +494,7 @@ export default function AddBusiness() {
             </Button>
           )}
         </div>
+
         {publishError && (
           <Alert color="failure" className="mt-4 mx-auto w-1/2">
             {publishError}

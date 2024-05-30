@@ -5,7 +5,7 @@ import { User } from "../models/userModel.js";
 import { getCoordinates, getDistance } from "../utils/geolocation.js";
 
 
-const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/;
+const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/ || /\b\d{9}\b/ || /\b\d{8}\b/ || /\b\d{7}\b/ || /\b\d{10}[a-z]\b/ ||  /\b\d{7}[a-z]\b/ ||  /\b\d{8}[a-z]\b/ ||  /\b\d{9}[a-z]\b/;
 const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
 const addressRegex = /\b\d{1,5}\s+\w+\s+\w+\b/;
 
@@ -77,8 +77,7 @@ export const addBusiness = async (req, res, next) => {
     await userInfo.save();
     res.status(201).json(savedBusiness);
   } catch (err) {
-    console.error(err); // Log the error for better diagnosis
-    next(err); // Pass the error to the error handler
+    next(err); 
   }
 };
 

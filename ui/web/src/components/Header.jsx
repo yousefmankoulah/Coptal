@@ -168,24 +168,39 @@ export default function Header() {
         </div>
 
         <Navbar.Collapse>
-          <Navbar.Link active={path === "/"}>
-            <Link className="text-white" to="/">
+          <Navbar.Link active={path === "/home"}>
+            <Link className="text-white" to="/home">
               Home
             </Link>
           </Navbar.Link>
 
-          <Navbar.Link active={path === "/contactus"}>
-            <Link className="text-white" to="/contactus">
-              Contact Us
+          <Navbar.Link active={path === "/"}>
+            <Link className="text-white" to="/">
+              Explore Businesses
             </Link>
           </Navbar.Link>
+
+          
           {currentUser && (
+            <>
+            <Navbar.Link active={path === `/dashboard/${currentUser._id}`}>
+          <Link className="text-white" to={`/dashboard/${currentUser._id}`}>
+           Dashboard
+          </Link>
+          </Navbar.Link>
             <Navbar.Link active={path === "/addBusiness"}>
             <Link className="text-white" to="/addBusiness">
               Add Business
             </Link>
           </Navbar.Link>
+
+          </>
           )}
+          <Navbar.Link active={path === "/contactus"}>
+            <Link className="text-white" to="/contactus">
+              Contact Us
+            </Link>
+          </Navbar.Link>
         </Navbar.Collapse>
       </Navbar>
 

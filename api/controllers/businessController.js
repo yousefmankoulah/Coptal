@@ -4,6 +4,11 @@ import { deleteFileFromStorage } from "../utils/firebaseConfig.js";
 import { User } from "../models/userModel.js";
 import { getCoordinates, getDistance } from "../utils/geolocation.js";
 
+
+const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/;
+const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+const addressRegex = /\b\d{1,5}\s+\w+\s+\w+\b/;
+
 export const addBusiness = async (req, res, next) => {
   try {
     const {
@@ -25,6 +30,10 @@ export const addBusiness = async (req, res, next) => {
     });
     if (checkBusiness) {
       return res.status(400).json({ message: "Business already exists" });
+    }
+
+    if (phoneRegex.test(businessDescription) || emailRegex.test(businessDescription) || addressRegex.test(businessDescription)) {
+      return res.status(400).json({ message: "Business description cannot contain phone number, email address, or address information" });
     }
 
     const coordinates = await getCoordinates(zipCode);
@@ -79,11 +88,12 @@ export const updateBusiness = async (req, res, next) => {
       businessName,
       businessLogo,
       businessServices,
-      servingArea,
+      zipCode,
+      rangeInMiles,
       businessDescription,
       businessCategory,
     } = req.body;
-    if (!businessName || !servingArea || !businessCategory) {
+    if (!businessName || !zipCode || !rangeInMiles || !businessCategory) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const userId = req.user.id;
@@ -99,6 +109,12 @@ export const updateBusiness = async (req, res, next) => {
         .json({ message: "You are not allowed to update the business info" });
     }
 
+    if (phoneRegex.test(businessDescription) || emailRegex.test(businessDescription) || addressRegex.test(businessDescription)) {
+      return res.status(400).json({ message: "Business description cannot contain phone number, email address, or address information" });
+    }
+
+    const coordinates = await getCoordinates(zipCode);
+
     const business = await Business.findByIdAndUpdate(
       businessId,
       {
@@ -111,8 +127,12 @@ export const updateBusiness = async (req, res, next) => {
         })),
         businessDescription,
         servingArea: {
-          zipCode: servingArea.zipCode,
-          rangeInMiles: servingArea.rangeInMiles,
+          zipCode: zipCode,
+          rangeInMiles: rangeInMiles,
+          location: {
+            type: "Point",
+            coordinates: [coordinates.longitude, coordinates.latitude],
+          },
         },
         businessCategory,
       },
@@ -234,3 +254,14 @@ export const getBusinessesByLocation = async (req, res, next) => {
     next(errorHandler(error, res));
   }
 };
+
+
+export const checkBusinessName = async (req, res, next) => {
+  const { businessName } = req.body;
+  try {
+    const existingBusiness = await Business.findOne({ businessName });
+    res.json({ exists: !!existingBusiness });
+  } catch (error) {
+      next(error)
+  }
+}

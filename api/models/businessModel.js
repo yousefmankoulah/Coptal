@@ -1,11 +1,5 @@
 import mongoose from "mongoose";
 
-// Regular expressions to detect addresses, emails, and phone numbers
-const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/;
-const phoneRegex = /(\+?\d{1,4}[\s-]?)?(?:\(?\d{3}\)?[\s-]?)?\d{3}[\s-]?\d{4}/;
-const addressRegex =
-  /(address|st|street|road|rd|ave|avenue|blvd|boulevard|drive|dr|lane|ln|court|ct|apt|suite|building|bldg|unit|floor|fl|pobox|po box|zip|zipcode|postal|mail|email|phone|contact)/i;
-
 const businessSchema = new mongoose.Schema(
   {
     userId: {
@@ -46,15 +40,7 @@ const businessSchema = new mongoose.Schema(
 
     businessDescription: {
       type: String,
-      validate: {
-        validator: function (v) {
-          return (
-            !emailRegex.test(v) && !phoneRegex.test(v) && !addressRegex.test(v)
-          );
-        },
-        message: (props) =>
-          "Business description cannot contain email, phone number, or address information.",
-      },
+      
     },
 
     servingArea: {
@@ -109,15 +95,7 @@ const ReviewSchema = new mongoose.Schema({
   },
   comment: {
     type: String,
-    validate: {
-      validator: function (v) {
-        return (
-          !emailRegex.test(v) && !phoneRegex.test(v) && !addressRegex.test(v)
-        );
-      },
-      message: (props) =>
-        "Comment cannot contain email, phone number, or address information.",
-    },
+    
   },
   createdAt: {
     type: Date,

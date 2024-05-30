@@ -2,6 +2,11 @@ import { Business, Review } from "../models/businessModel.js";
 import { errorHandler } from "../utils/error.js";
 import { User } from "../models/userModel.js";
 
+
+const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/;
+const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+const addressRegex = /\b\d{1,5}\s+\w+\s+\w+\b/;
+
 export const addRating = async (req, res, next) => {
   // only successful order able to rate but not now
   try {
@@ -18,6 +23,10 @@ export const addRating = async (req, res, next) => {
     }
     if (user.role !== "customer") {
       return next(new errorHandler("Only customers can add ratings", 403));
+    }
+
+    if (phoneRegex.test(comment) || emailRegex.test(comment) || addressRegex.test(comment)) {
+      return res.status(400).json({ message: "Comments cannot contain phone number, email address, or address information" });
     }
 
     const review = new Review({
@@ -58,6 +67,10 @@ export const updateComment = async (req, res, next) => {
         new errorHandler("You are not authorized to update this review", 403)
       );
     }
+    if (phoneRegex.test(comment) || emailRegex.test(comment) || addressRegex.test(comment)) {
+      return res.status(400).json({ message: "Comments cannot contain phone number, email address, or address information" });
+    }
+    
     const review = await Review.findByIdAndUpdate(
       reviewId,
       { comment },

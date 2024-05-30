@@ -38,6 +38,27 @@ export default function AddBusiness() {
   const [currentStep, setCurrentStep] = useState(0);
   const filePickerRef = useRef();
   const navigate = useNavigate();
+  const [businessNameExists, setBusinessNameExists] = useState(false);
+
+  const checkBusinessNameExists = async (name) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_DOMAIN}/api/business/checkBusinessName`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ businessName: name }),
+        }
+      );
+      const data = await res.json();
+      return data.exists;
+    } catch (error) {
+      console.error("Error checking business name:", error);
+      return false;
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -153,10 +174,17 @@ export default function AddBusiness() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (currentStep === 0) {
+      const nameExists = await checkBusinessNameExists(formData.businessName);
+      if (nameExists) {
+        setBusinessNameExists(true);
+        return;
+      }
+    }
     setCurrentStep((prevStep) => prevStep + 1);
   };
-
+  
   const handlePrev = () => {
     setCurrentStep((prevStep) => prevStep - 1);
   };
@@ -190,7 +218,15 @@ export default function AddBusiness() {
     {
       label: "Business Name",
       content: (
-        <div className="text-center w-1/2 mx-auto">
+        <div>
+             {businessNameExists && (
+        <Alert color="failure">
+          Business name already exists. Please choose a different name.
+        </Alert>
+      )}
+      {currentStep === 0 && (
+        <div className="text-center w-1/2 mx-auto sm:w-full xs:w-full">
+       
           <Label value="Business Name" />
           <TextInput
             id="businessName"
@@ -202,12 +238,14 @@ export default function AddBusiness() {
             required
           />
         </div>
+        )}
+        </div>
       ),
     },
     {
       label: "Business Logo",
       content: (
-        <div className="text-center w-1/2 mx-auto">
+        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
           <input
             type="file"
             accept="image/*"
@@ -262,7 +300,7 @@ export default function AddBusiness() {
     {
       label: "Business Category",
       content: (
-        <div className="text-center w-1/2 mx-auto">
+        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
         <Label value="Business Category" />
         <Select
           id="businessCategory"
@@ -291,7 +329,7 @@ export default function AddBusiness() {
     {
       label: "Business Services",
       content: (
-        <div className="w-1/2 mx-auto">
+        <div className="w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
           <Label value="Business Services" />
           {formData.businessServices.map((service, index) => (
             <div key={index} className="mb-4">
@@ -347,7 +385,7 @@ export default function AddBusiness() {
     {
       label: "Business Location & Range",
       content: (
-        <div className="text-center w-1/2 mx-auto">
+        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
           <Label value="Zip Code" />
           <TextInput
             id="zipCode"
@@ -398,7 +436,7 @@ export default function AddBusiness() {
     {
       label: "Business Description",
       content: (
-        <div className="text-center w-1/2 mx-auto">
+        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
           <Label value="Business Description" />
           <Textarea
             id="businessDescription"
@@ -435,7 +473,7 @@ export default function AddBusiness() {
           )}
         </div>
         {publishError && (
-          <Alert color="failure" className="mt-4">
+          <Alert color="failure" className="mt-4 mx-auto w-1/2">
             {publishError}
           </Alert>
         )}

@@ -39,6 +39,7 @@ export default function AddBusiness() {
   const filePickerRef = useRef();
   const navigate = useNavigate();
   const [businessNameExists, setBusinessNameExists] = useState(false);
+  const alertTimeoutRef = useRef(null);
 
   const checkBusinessNameExists = async (name) => {
     try {
@@ -180,6 +181,8 @@ export default function AddBusiness() {
       if (nameExists) {
         setBusinessNameExists(true);
         return;
+      } else {
+        setBusinessNameExists(false); // Reset if name is not duplicate
       }
     }
     setCurrentStep((prevStep) => prevStep + 1);
@@ -214,16 +217,24 @@ export default function AddBusiness() {
     }));
   };
 
+  useEffect(() => {
+    if (publishError) {
+      alertTimeoutRef.current = setTimeout(() => {
+        setPublishError(null);
+      }, 30000); // 30 seconds
+    }
+
+    return () => {
+      clearTimeout(alertTimeoutRef.current);
+    };
+  }, [publishError]);
+
   const steps = [
     {
       label: "Business Name",
       content: (
         <div>
-             {businessNameExists && (
-        <Alert color="failure">
-          Business name already exists. Please choose a different name.
-        </Alert>
-      )}
+            
       {currentStep === 0 && (
         <div className="text-center w-1/2 mx-auto sm:w-full xs:w-full">
        
@@ -239,6 +250,11 @@ export default function AddBusiness() {
           />
         </div>
         )}
+         {businessNameExists && (
+              <Alert color="failure" className="w-1/2 mx-auto mt-2 mb-2">
+                Business name already exists. Please choose a different name.
+              </Alert>
+             )}
         </div>
       ),
     },

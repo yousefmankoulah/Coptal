@@ -259,7 +259,8 @@ export const getBusinessesByLocation = async (req, res, next) => {
 export const checkBusinessName = async (req, res, next) => {
   const { businessName } = req.body;
   try {
-    const existingBusiness = await Business.findOne({ businessName });
+    const lowerCaseName = businessName.toLowerCase();
+    const existingBusiness = await Business.findOne({ businessName: { $regex: new RegExp(`^${lowerCaseName}$`, 'i') } });
     res.json({ exists: !!existingBusiness });
   } catch (error) {
       next(error)

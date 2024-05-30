@@ -243,7 +243,7 @@ export default function AddBusiness() {
         <div>
             
       {currentStep === 0 && (
-        <div className="text-center w-1/2 mx-auto sm:w-full ">
+        <div className="text-center mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
        
           <Label value="Business Name" />
           <TextInput
@@ -258,7 +258,7 @@ export default function AddBusiness() {
         </div>
         )}
          {businessNameExists && (
-              <Alert color="failure" className="w-1/2 mx-auto mt-2 mb-2">
+              <Alert color="failure" className="lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full mx-auto mt-2 mb-2">
                 Business name already exists. Please choose a different name.
               </Alert>
              )}
@@ -268,7 +268,7 @@ export default function AddBusiness() {
     {
       label: "Business Logo",
       content: (
-        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
+        <div className="text-center mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
           <input
             type="file"
             accept="image/*"
@@ -323,7 +323,7 @@ export default function AddBusiness() {
     {
       label: "Business Category",
       content: (
-        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
+        <div className="text-center mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
         <Label value="Business Category" />
         <Select
           id="businessCategory"
@@ -352,7 +352,7 @@ export default function AddBusiness() {
     {
       label: "Business Services",
       content: (
-        <div className="w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
+        <div className="mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
           <Label value="Business Services" />
           {formData.businessServices.map((service, index) => (
             <div key={index} className="mb-4">
@@ -408,7 +408,7 @@ export default function AddBusiness() {
     {
       label: "Business Location & Range",
       content: (
-        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
+        <div className="text-center mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
           <Label value="Zip Code" />
           <TextInput
             id="zipCode"
@@ -459,7 +459,7 @@ export default function AddBusiness() {
     {
       label: "Business Description",
       content: (
-        <div className="text-center w-1/2 mx-auto xs:w-3/4 sm:w-3/4">
+        <div className="text-center mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
           <Label value="Business Description" />
           <Textarea
             id="businessDescription"
@@ -478,7 +478,7 @@ export default function AddBusiness() {
       <h1 className="text-2xl font-bold text-center mb-10">Add Your Business</h1>
       <form onSubmit={handleSubmit} className="mt-10">
         {steps[currentStep].content}
-        <div className="flex justify-between mt-4 mx-auto w-1/2">
+        <div className="flex justify-between mt-4 mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
           {currentStep > 0 && (
             <Button color="gray" onClick={handlePrev}>
               Previous
@@ -496,7 +496,7 @@ export default function AddBusiness() {
         </div>
 
         {publishError && (
-          <Alert color="failure" className="mt-4 mx-auto w-1/2">
+          <Alert color="failure" className="mt-4 mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
             {publishError}
           </Alert>
         )}

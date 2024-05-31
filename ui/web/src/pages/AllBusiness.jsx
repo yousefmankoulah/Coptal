@@ -1,4 +1,4 @@
-import { Card, Button, Modal, Timeline } from "flowbite-react";
+import { Card, Button, Modal, Timeline, Badge, Rating } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -31,6 +31,40 @@ export default function AllBusiness() {
         }
         getAllBusiness()
       }, []);
+
+
+      const renderStars = (rating) => {
+        const filledStars = Math.floor(rating); // Number of filled stars
+        const remainingStars = 5 - filledStars; // Remaining empty stars
+        const stars = [];
+      
+        // Generate filled stars
+        for (let i = 0; i < filledStars; i++) {
+          stars.push(<Rating.Star key={`filled-${i}`} />);
+        }
+      
+        // Generate remaining empty stars
+        for (let i = 0; i < remainingStars; i++) {
+          stars.push(<Rating.Star key={`empty-${i}`} filled={false} />);
+        }
+      
+        return stars;
+      };
+      
+      // RatingStars component to display rating stars
+      const RatingStars = ({ rating }) => (
+        <div className="rating-stars">
+          {rating ? (
+            <div className="flex items-center">
+              {renderStars(rating)}
+              <p className="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">{rating} out of 5</p>
+            </div>
+          ) : (
+            <p>No reviews yet</p>
+          )}
+        </div>
+      );
+      
      
 
     return (
@@ -38,21 +72,53 @@ export default function AllBusiness() {
 
 <div className="container mx-auto p-4">
       {formData && formData.length > 0 && (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {formData.map((business) => (
-            <div key={business._id}>
-              <Card
-                className="max-w-sm"
-                imgAlt={`${business.businessName} company logo`}
-                imgSrc={business.businessLogo}
-              >
-                <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <div className="flex flex-col gap-4 lg:w-2/3 md:w-3/4 mx-auto">
+          {formData.map((business, index) => (
+            <div 
+              key={business._id} 
+              className="w-full flex flex-col lg:flex-row bg-white shadow-2xl rounded-2xl overflow-hidden"
+            >
+              <div className="h-36 lg:h-auto lg:w-48 flex-none bg-cover text-center overflow-hidden">
+                <img 
+                  src={business.businessLogo} 
+                  alt={`${business.businessName} company logo`} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col justify-between p-4 leading-normal">
+                <h5 className="text-2xl font-bold tracking-tight text-blue-950 dark:text-white uppercase md:text-center">
                   {business.businessName}
                 </h5>
-                <p className="font-normal text-gray-700 dark:text-gray-400">
+                <div className="md:text-center">
+                  {business.businessTotalRating && business.businessTotalRating > 0 ? (
+                    <Rating>
+                      <RatingStars rating={business.businessTotalRating} />
+                     
+                    </Rating>
+                  ) : (
+                    <p>No reviews yet</p>
+                  )}
+                  </div>
+
+                <p className="font-normal text-gray-700 dark:text-gray-400 mt-4 md:text-center">
                   {business.businessDescription}
                 </p>
-              </Card>
+                <p className="font-bold text-gray-700 dark:text-gray-400 mt-2">
+                  Business Zipcode: {business.servingArea.zipCode}
+                </p>
+                <div className="mt-4 md:text-center">
+                  {business.businessServices && business.businessServices.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {business.businessServices.map((service, serviceIndex) => (
+                        <Badge key={serviceIndex} color="success" className="uppercase">
+                          {service.serviceName} - Price ({service.minPrice} - {service.maxPrice}$)
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
             </div>
           ))}
         </div>

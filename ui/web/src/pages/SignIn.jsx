@@ -56,7 +56,7 @@ export default function SignIn() {
       if (res.ok) {
         dispatch(signInSuccess(data));
 
-        navigate(`/dashboard/${data.rest._id}`);
+        navigate(`/`);
       }
     } catch (error) {
       dispatch(signInFailure(error.message));

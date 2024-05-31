@@ -467,6 +467,7 @@ export default function AddBusiness() {
             placeholder="Describe your business without adding any address, phone number, or email address."
             onChange={handleChange}
             value={formData.businessDescription}
+            className="h-48"
           />
         </div>
       ),

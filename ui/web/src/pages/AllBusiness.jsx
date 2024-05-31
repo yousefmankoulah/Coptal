@@ -118,7 +118,14 @@ export default function AllBusiness() {
                   )}
                 </div>
               </div>
-              
+              <div className="md:ml-auto lg:ml-auto mr-2 mt-4 relative">
+              <Button type="submit" color="success" className="mt-2 mb-2">
+              Submit
+            </Button>
+            <Button type="submit" color="success">
+              Submit
+            </Button>
+              </div>
             </div>
           ))}
         </div>

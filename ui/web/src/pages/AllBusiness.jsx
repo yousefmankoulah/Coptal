@@ -1,4 +1,4 @@
-import { Card, Button, Modal, Timeline, Badge, Rating } from "flowbite-react";
+import { Button, Badge, Rating } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";

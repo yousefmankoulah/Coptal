@@ -71,66 +71,65 @@ export default function AllBusiness() {
     <div className="min-h-screen mt-20">
 
 <div className="container mx-auto p-4">
-      {formData && formData.length > 0 && (
-        <div className="flex flex-col gap-4 lg:w-2/3 md:w-3/4 mx-auto">
-          {formData.map((business, index) => (
-            <div 
-              key={business._id} 
-              className="w-full flex flex-col lg:flex-row bg-white shadow-2xl rounded-2xl overflow-hidden"
-            >
-              <div className="h-36 lg:h-auto lg:w-48 flex-none bg-cover text-center overflow-hidden">
-                <img 
-                  src={business.businessLogo} 
-                  alt={`${business.businessName} company logo`} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex flex-col justify-between p-4 leading-normal">
-                <h5 className="text-2xl font-bold tracking-tight text-blue-950 dark:text-white uppercase md:text-center">
-                  {business.businessName}
-                </h5>
-                <div className="md:text-center">
-                  {business.businessTotalRating && business.businessTotalRating > 0 ? (
-                    <Rating>
-                      <RatingStars rating={business.businessTotalRating} />
-                     
-                    </Rating>
-                  ) : (
-                    <p>No reviews yet</p>
-                  )}
-                  </div>
-
-                <p className="font-normal text-gray-700 dark:text-gray-400 mt-4 md:text-center">
-                  {business.businessDescription}
-                </p>
-                <p className="font-bold text-gray-700 dark:text-gray-400 mt-2">
-                  Business Zipcode: {business.servingArea.zipCode}
-                </p>
-                <div className="mt-4 md:text-center">
-                  {business.businessServices && business.businessServices.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {business.businessServices.map((service, serviceIndex) => (
-                        <Badge key={serviceIndex} color="success" className="uppercase">
-                          {service.serviceName} - Price ({service.minPrice} - {service.maxPrice}$)
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="md:ml-auto lg:ml-auto mr-2 mt-4 relative">
-              <Button type="submit" color="success" className="mt-2 mb-2">
-              Submit
-            </Button>
-            <Button type="submit" color="success">
-              Submit
-            </Button>
-              </div>
+  {formData && formData.length > 0 && (
+    <div className="flex flex-col gap-4 lg:w-2/3 md:w-3/4 mx-auto">
+      {formData.map((business, index) => (
+        <div 
+          key={business._id} 
+          className="w-full flex flex-col lg:flex-row bg-white shadow-2xl rounded-2xl overflow-hidden"
+        >
+          <div className="h-36 lg:h-auto lg:w-48 flex-none bg-cover text-center overflow-hidden">
+            <img 
+              src={business.businessLogo} 
+              alt={`${business.businessName} company logo`} 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex flex-col justify-between p-4 leading-normal">
+            <h5 className="text-2xl font-bold tracking-tight text-blue-950 dark:text-white uppercase text-center">
+              {business.businessName}
+            </h5>
+            <div className="text-center">
+              {business.businessTotalRating && business.businessTotalRating > 0 ? (
+                <Rating>
+                  <RatingStars rating={business.businessTotalRating} />
+                </Rating>
+              ) : (
+                <p>No reviews yet</p>
+              )}
             </div>
-          ))}
+            <p className="font-normal text-gray-700 dark:text-gray-400 mt-4 text-left">
+              {business.businessDescription}
+            </p>
+            <p className="font-bold text-gray-700 dark:text-gray-400 mt-2 text-left">
+              Business Zipcode: {business.servingArea.zipCode}
+            </p>
+            <div className="mt-4 mb-2 text-center">
+              {business.businessServices && business.businessServices.length > 0 && (
+                <div className="flex flex-wrap gap-2 justify-left">
+                  {business.businessServices.map((service, serviceIndex) => (
+                    <Badge key={serviceIndex} color="success" className="uppercase">
+                      {service.serviceName} - Price ({service.minPrice} - {service.maxPrice}$)
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2">
+              <Button type="submit" color="success" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
+                Request Order
+              </Button>
+              <Button type="submit" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
+                View Detail
+              </Button>
+            </div>
+          </div>
         </div>
-      )}
+      ))}
     </div>
+  )}
+</div>
+
         
     </div>
     );

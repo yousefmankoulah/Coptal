@@ -1,12 +1,15 @@
 import { Button, Badge, Rating, TextInput, Label, Select, Alert } from "flowbite-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function AllBusiness() {
   const [formData, setFormData] = useState({});
   const [businesses, setBusinesses] = useState([]);
   const [publishError, setPublishError] = useState(null);
   const { currentUser, token } = useSelector((state) => state.user);
+  const [submitted, setSubmitted] = useState(false);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -33,7 +36,7 @@ export default function AllBusiness() {
         setPublishError(data.message);
         return;
       }
-
+      setSubmitted(true);
       setBusinesses(data.businesses);
     } catch (error) {
       setPublishError("Something went wrong");
@@ -68,6 +71,15 @@ export default function AllBusiness() {
       )}
     </div>
   );
+
+  useEffect(() => {
+    if (submitted && businesses.length === 0) {
+      setSubmitted(false); 
+    }
+  }, [formData]);
+
+  console.log(submitted)
+
 
   return (
     <div className="min-h-screen mt-20">
@@ -121,8 +133,8 @@ export default function AllBusiness() {
             </Alert>
           )}
         </form>
-
-        {businesses.length > 0 && (
+       
+        {businesses.length > 0 ? (
           <div className="flex flex-col gap-4 lg:w-2/3 md:w-3/4 mx-auto mt-10">
             {businesses.map((business, index) => (
               <div 
@@ -167,18 +179,33 @@ export default function AllBusiness() {
                     )}
                   </div>
                   <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2">
+
                     <Button type="button" color="success" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
                       Request Order
                     </Button>
+
                     <Button type="button" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
-                      View Detail
+                      <Link to={`/businessDetail/${business._id}`}>View Detail</Link>
                     </Button>
+
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        )}
+        ): (
+          <>
+          {submitted && (
+           
+            <p className="text-center mt-10 font-bold text-xl">
+            No current {formData.businessCategory} in your area with zip code {formData.zipCode}
+          </p>
+           
+          )}
+          </>
+            )}
+           
+       
       </div>
     </div>
   );

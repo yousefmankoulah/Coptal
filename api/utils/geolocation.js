@@ -42,6 +42,8 @@ export const getDistance = (coord1, coord2) => {
     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  const distance = R * c; // in meters
-  return distance;
+  const distanceInMeters = R * c; // Distance in meters
+  const distanceInMiles = distanceInMeters / 1609.34; // Convert meters to miles
+
+  return distanceInMiles;
 };

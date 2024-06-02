@@ -14,6 +14,7 @@ import AddBusiness from "./pages/AddBusiness";
 import AllBusiness from "./pages/AllBusiness";
 import Dashboard from "./pages/Dashboard";
 import UpdateBusiness from "./pages/UpdateBusiness";
+import BusinessDetail from "./pages/BusinessDetail";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/" element={<AllBusiness />} />
+        <Route path="/businessDetail/:id" element={<BusinessDetail />} />
 
         <Route element={<OnlyAdminPrivateRoute />}></Route>
 

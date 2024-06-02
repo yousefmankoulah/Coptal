@@ -186,16 +186,7 @@ export const getABusiness = async (req, res, next) => {
   }
 };
 
-export const getAllBusiness = async (req, res, next) => {
-  try {
-    const businesses = await Business.find()
-      .sort({ averageRating: -1 })
-      .populate("businessCategory");
-    res.json(businesses);
-  } catch (err) {
-    next(errorHandler(err, res));
-  }
-};
+
 
 export const getBusinessesByLocation = async (req, res, next) => {
   try {
@@ -220,10 +211,16 @@ export const getBusinessesByLocation = async (req, res, next) => {
         const businessCoordinates = await getCoordinates(business.servingArea.zipCode);
         const distance = getDistance(customerCoordinates, businessCoordinates);
 
-        return {
-          business,
-          distance,
-        };
+
+        // Check if the distance is within the business's range
+        if (distance <= business.servingArea.rangeInMiles) {
+          return {
+            business,
+            distance,
+          };
+        } else {
+          return null;
+        }
       })
     );
 

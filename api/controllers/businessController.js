@@ -199,36 +199,25 @@ export const getAllBusiness = async (req, res, next) => {
 
 export const getBusinessesByLocation = async (req, res, next) => {
   try {
-    // Extract the zip code from the request query
-    const { zipCode } = req.query;
+    const { zipCode, businessCategory } = req.query;
 
-    // Check if the zip code is provided
     if (!zipCode) {
       return res.status(400).json({ message: "Zip code is required" });
     }
 
-    // Get the coordinates for the provided zip code
     const customerCoordinates = await getCoordinates(zipCode);
 
-    // Fetch all businesses from the database
-    const businesses = await Business.find();
+    // Fetch all businesses
+    const businesses = await Business.find({businessCategory: businessCategory})
 
-    // Calculate distances and filter businesses based on range
-    const filteredBusinesses = await Promise.all(
+    // Calculate distances for each business
+    const businessDistances = await Promise.all(
       businesses.map(async (business) => {
-        if (
-          !business.servingArea.zipCode ||
-          !business.servingArea.rangeInMiles
-        ) {
+        if (!business.servingArea.zipCode || !business.servingArea.rangeInMiles) {
           return null;
         }
 
-        // Get coordinates for the business's zip code
-        const businessCoordinates = await getCoordinates(
-          business.servingArea.zipCode
-        );
-
-        // Calculate distance between customer and business coordinates
+        const businessCoordinates = await getCoordinates(business.servingArea.zipCode);
         const distance = getDistance(customerCoordinates, businessCoordinates);
 
         return {
@@ -238,19 +227,12 @@ export const getBusinessesByLocation = async (req, res, next) => {
       })
     );
 
-    // Filter out null values and businesses outside of range
-    const validBusinesses = filteredBusinesses
-      .filter(
-        (b) => b && b.distance <= b.business.servingArea.rangeInMiles * 1609.34
-      ) // Convert range to meters
-      .sort((a, b) => a.distance - b.distance);
+    // Filter out null values (businesses without valid zip code or range) and sort by distance
+    const validBusinesses = businessDistances.filter(b => b !== null).sort((a, b) => a.distance - b.distance);
 
-    // Extract only business data without distance
-    const businessesData = validBusinesses.map((b) => b.business);
-
-    res.json(businessesData);
+    return res.status(200).json({ businesses: validBusinesses.map(b => b.business) });
   } catch (error) {
-    next(errorHandler(error, res));
+    next(error);
   }
 };
 

@@ -35,7 +35,7 @@ const businessSchema = new mongoose.Schema(
 
     businessTotalRating: {
       type: String,
-      default: 0.0,
+      default: "0.0",
     },
 
     businessDescription: {

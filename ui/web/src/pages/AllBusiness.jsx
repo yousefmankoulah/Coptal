@@ -74,7 +74,7 @@ export default function AllBusiness() {
       <div className="container mx-auto p-4">
         <h1 className="font-bold text-center text-3xl mb-10">Explore Local Businesses</h1>
 
-        <form onSubmit={handleSubmit} className="mt-10">
+        <form onSubmit={handleSubmit} className="mt-10 mx-auto lg:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
           <div className="mb-4">
             <Label value="Business Category" />
             <Select
@@ -84,7 +84,7 @@ export default function AllBusiness() {
               onChange={handleChange}
               required
             >
-              <option value="" disabled>
+              <option value="" default disabled>
                 Choose your business Category
               </option>
               <option value="construction services">construction services</option>
@@ -111,7 +111,7 @@ export default function AllBusiness() {
             />
           </div>
           
-          <Button type="submit" color="success" className="mt-4">
+          <Button type="submit" color="success" className="mt-4 mx-auto">
             Explore
           </Button>
 
@@ -131,34 +131,34 @@ export default function AllBusiness() {
               >
                 <div className="h-36 lg:h-auto lg:w-48 flex-none bg-cover text-center overflow-hidden">
                   <img 
-                    src={business.business.businessLogo} 
-                    alt={`${business.business.businessName} company logo`} 
+                    src={business.businessLogo} 
+                    alt={`${business.businessName} company logo`} 
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex flex-col justify-between p-4 leading-normal">
                   <h5 className="text-2xl font-bold tracking-tight text-blue-950 dark:text-blue-950 uppercase text-center">
-                    {business.business.businessName}
+                    {business.businessName}
                   </h5>
                   <div className="text-center">
-                    {business.business.businessTotalRating && business.business.businessTotalRating > 0 ? (
+                    {business.businessTotalRating && business.businessTotalRating > 0 ? (
                       <Rating>
-                        <RatingStars rating={business.business.businessTotalRating} />
+                        <RatingStars rating={business.businessTotalRating} />
                       </Rating>
                     ) : (
                       <p>No reviews yet</p>
                     )}
                   </div>
                   <p className="font-normal text-gray-700 dark:text-gray-400 mt-4 text-left">
-                    {business.business.businessDescription}
+                    {business.businessDescription}
                   </p>
                   <p className="font-bold text-gray-700 dark:text-gray-400 mt-2 text-left">
-                    Business Zipcode: {business.business.servingArea.zipCode}
+                    Business Zipcode: {business.servingArea.zipCode}
                   </p>
                   <div className="mt-4 mb-2 text-center">
-                    {business.business.businessServices && business.business.businessServices.length > 0 && (
+                    {business.businessServices && business.businessServices.length > 0 && (
                       <div className="flex flex-wrap gap-2 justify-left">
-                        {business.business.businessServices.map((service, serviceIndex) => (
+                        {business.businessServices.map((service, serviceIndex) => (
                           <Badge key={serviceIndex} color="success" className="uppercase">
                             {service.serviceName} - Price ({service.minPrice} - {service.maxPrice}$)
                           </Badge>

@@ -163,6 +163,29 @@ export default function BusinessDetail() {
             </>
           )}
         </div>
+
+        <div className="mx-auto w-4/5 mt-10 mb-10">
+        
+        {currentUser ? (
+          <>
+          {formData.userId === currentUser._id ? (
+             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2">
+            <Button className="mx-auto w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
+            <Button className="mx-auto bg-red-700 text-white w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="red">Delete the Business</Button>
+          </div>
+          ): (
+            <>
+            <Button className="mx-auto" color="success">Request Access</Button>
+            </>
+          )}
+          </>
+        ): (
+          <>
+          <Button className="mx-auto" color="success">Request Access</Button>
+          </>
+        )}
+        
+        </div>
        
       </Card>
     </div>

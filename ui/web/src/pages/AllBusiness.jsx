@@ -1,4 +1,4 @@
-import { Button, Badge, Rating, TextInput, Label, Select, Alert } from "flowbite-react";
+import { Button, Badge, Rating, TextInput, Label, Select, Alert, Spinner } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -9,6 +9,7 @@ export default function AllBusiness() {
   const [publishError, setPublishError] = useState(null);
   const { currentUser, token } = useSelector((state) => state.user);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
 
   const handleChange = (e) => {
@@ -18,6 +19,7 @@ export default function AllBusiness() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPublishError(null);
+    setLoading(true);
 
     try {
       const { zipCode, businessCategory } = formData;
@@ -34,12 +36,15 @@ export default function AllBusiness() {
 
       if (!res.ok) {
         setPublishError(data.message);
+        setLoading(false);
         return;
       }
       setSubmitted(true);
       setBusinesses(data.businesses);
+      setLoading(false);
     } catch (error) {
       setPublishError("Something went wrong");
+      setLoading(false);
     }
   };
 
@@ -77,8 +82,6 @@ export default function AllBusiness() {
       setSubmitted(false); 
     }
   }, [formData]);
-
-  console.log(submitted)
 
 
   return (
@@ -123,8 +126,11 @@ export default function AllBusiness() {
             />
           </div>
           
-          <Button type="submit" color="success" className="mt-4 mx-auto">
-            Explore
+          <Button type="submit" color="success" className="mt-4 mx-auto" disabled={loading}>
+            {loading ? (<div className="flex items-center">
+                <Spinner />
+                <span className="ml-2">Loading...</span>
+              </div>) : ("Explore")}
           </Button>
 
           {publishError && (

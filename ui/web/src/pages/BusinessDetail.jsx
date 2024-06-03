@@ -37,7 +37,7 @@ export default function BusinessDetail() {
     };
 
     handleSubmit()
-  })
+  }, [])
 
   console.log(formData)
 

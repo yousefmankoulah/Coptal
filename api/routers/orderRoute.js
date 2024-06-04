@@ -7,7 +7,7 @@ import {
 
 const router = express.Router();
 
-router.post("/sendRequest", verifyToken, sendingRequest);
+router.post("/sendRequest/:_id", verifyToken, sendingRequest);
 router.post("/orderStatus/:_id", verifyToken, orderRequestStatus);
 
 export default router;

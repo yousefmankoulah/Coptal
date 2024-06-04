@@ -112,6 +112,7 @@ export default function BusinessDetail() {
   );
 
 
+
   return (
     <div className="min-h-screen mt-20">
       <Card className="lg:w-3/4 xs:w-full mx-auto shadow-2xl rounded-2xl">
@@ -221,22 +222,26 @@ export default function BusinessDetail() {
       {comment && comment.length > 0 ? (
         <>
           {comment.map((comments, index) => (
-            <div key={index} className="flex items-start bg-gray-100 p-6 rounded-lg shadow-md space-x-4">
-              <img 
-                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" 
+            <div
+              key={index}
+              className="flex flex-col lg:flex-row items-start bg-gray-100 p-6 rounded-lg shadow-md space-y-4 lg:space-y-0 lg:space-x-4"
+            >
+              <img
+                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                 className="rounded-full w-24 h-24"
                 alt="Profile"
               />
               <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-lg">{comments.userId.fullName}</h4>
-                 
+                <h4 className="font-bold text-lg">{comments.userId.fullName}</h4>
+                <div className="mt-2 lg:mt-0">
                   <Rating>
                     <RatingStars rating={comments.rating} />
                   </Rating>
                 </div>
                 <p className="mt-2 text-gray-700">{comments.comment}</p>
-                <p className="mt-2 text-sm text-gray-500">Created on {new Date(comments.createdAt).toLocaleDateString()}</p>
+                <p className="mt-2 text-sm text-gray-500">
+                  Created on {new Date(comments.createdAt).toLocaleDateString()}
+                </p>
               </div>
             </div>
           ))}

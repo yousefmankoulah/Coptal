@@ -34,8 +34,15 @@ const businessSchema = new mongoose.Schema(
     ],
 
     businessTotalRating: {
-      type: String,
+      type: Number,
       default: "0.0",
+      validate: {
+        validator: function (v) {
+          // Ensure the number has at most one decimal place
+          return v.toString().match(/^\d+(\.\d{1})?$/);
+        },
+        message: props => `${props.value} is not a valid rating! Rating must be a number with at most one decimal place.`,
+      },
     },
 
     businessDescription: {
@@ -92,6 +99,13 @@ const ReviewSchema = new mongoose.Schema({
     min: 1,
     max: 5,
     required: true,
+    validate: {
+      validator: function (v) {
+        // Ensure the number has at most one decimal place
+        return v.toString().match(/^\d+(\.\d{1})?$/);
+      },
+      message: props => `${props.value} is not a valid rating! Rating must be a number with at most one decimal place.`,
+    },
   },
   comment: {
     type: String,

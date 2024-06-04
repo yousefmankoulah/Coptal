@@ -32,6 +32,6 @@ router.post("/addRating/:_id", verifyToken, addRating);
 router.put("/updateComment/:_id", verifyToken, updateComment);
 router.delete("/deleteComment/:_id", verifyToken, deleteComment);
 router.get("/getAReview/:_id", getAReview);
-router.get("getBusinessReview/:businessId", getBusinessReview);
+router.get("/getBusinessReview/:businessId", getBusinessReview);
 
 export default router;

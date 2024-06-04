@@ -133,8 +133,7 @@ export const getBusinessReview = async (req, res, next) => {
   try {
     const businessId = req.params.businessId;
     const reviews = await Review.find({ businessId: businessId }).populate(
-      "userId",
-      "businessId"
+      "userId"
     );
     if (!reviews) {
       return next(new errorHandler("Reviews are not found", 404));

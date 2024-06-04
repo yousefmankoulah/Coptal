@@ -1,11 +1,12 @@
 import { Button, Badge, Rating, Table , Card } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import RequestAccess from "../components/RequestAccess";
 
 // Fix the default icon issue with Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,8 +21,15 @@ export default function BusinessDetail() {
   const [formData, setFormData] = useState({});
   const { currentUser, token } = useSelector((state) => state.user);
   const [comment, setComment] = useState({});
+  const [showModal, setShowModal] = useState(false);
 
   const { id } = useParams();
+
+ 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
 
   useEffect(() => {
     const handleSubmit = async () => {
@@ -203,13 +211,23 @@ export default function BusinessDetail() {
           </div>
           ): (
             <>
-            <Button className="mx-auto" color="success">Request Access</Button>
+            <Button className="mx-auto" color="success" onClick={() => setShowModal(true)}>Request Access</Button>
+        
+            <RequestAccess id={id} onClose={handleCloseModal} showModal={showModal} />
+          
+          
+            
+     
             </>
           )}
           </>
         ): (
           <>
-          <Button className="mx-auto" color="success">Request Access</Button>
+          <Button className="mx-auto" color="success">
+            <Link to="/sign-in" className="text-white no-underline">
+              Request Access
+            </Link>
+          </Button>
           </>
         )}
         

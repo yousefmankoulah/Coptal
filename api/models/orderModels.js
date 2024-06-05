@@ -1,9 +1,15 @@
 import mongoose from "mongoose";
 
 const OrderRequestSchema = new mongoose.Schema({
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
+  },
+  businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Business",
     required: true,
   },
 

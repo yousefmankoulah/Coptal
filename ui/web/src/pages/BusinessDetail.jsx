@@ -7,6 +7,7 @@ import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import RequestAccess from "../components/RequestAccess";
+import CustomModal from "../components/CustomeModal";
 
 // Fix the default icon issue with Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,10 +27,22 @@ export default function BusinessDetail() {
   const { id } = useParams();
 
  
+  const handleKeyPress = (event) => {
+    if (event.key === "r") { // Change "r" to any key you want to trigger the modal
+      setShowModal(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keypress", handleKeyPress);
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress);
+    };
+  }, []);
+
   const handleCloseModal = () => {
     setShowModal(false);
   };
-
 
   useEffect(() => {
     const handleSubmit = async () => {
@@ -177,7 +190,7 @@ export default function BusinessDetail() {
         
         <div className="justify-center items-center p-4 rounded-2xl">
           
-          {formData.servingArea && formData.servingArea.location && (
+          {!showModal && formData.servingArea && formData.servingArea.location && (
             <>
             <p className="text-center text-xl mt-6 mb-2 font-bold">Serving Area in {formData.servingArea.zipCode}</p>
             <MapContainer
@@ -205,20 +218,23 @@ export default function BusinessDetail() {
         {currentUser ? (
           <>
           {formData.userId === currentUser._id ? (
-             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2">
-            <Button className="mx-auto w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
-            <Button className="mx-auto bg-red-700 text-white w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="red">Delete the Business</Button>
+             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 mx-auto">
+            <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
+            <Button className="bg-red-700 text-white w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="red">Delete the Business</Button>
           </div>
           ): (
-            <>
-            <Button className="mx-auto" color="success" onClick={() => setShowModal(true)}>Request Access</Button>
-        
-            <RequestAccess id={id} onClose={handleCloseModal} showModal={showModal} />
+            <div className="mt-4 flex flex-col sm:flex-row justify-center items-center mx-auto gap-2">
+            <Button color="success" className="w-full sm:w-auto px-6 py-2 text-lg"  onClick={() => setShowModal(true)}>Open Request Access</Button>
+            <Button color="blue" className="w-full sm:w-auto px-6 py-2 text-lg">Leave a Comment</Button>
+
+            <CustomModal showModal={showModal} onClose={handleCloseModal}>
+              <RequestAccess id={id} /> 
+            </CustomModal>
           
           
             
      
-            </>
+            </div>
           )}
           </>
         ): (

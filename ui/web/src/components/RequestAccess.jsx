@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Label,
@@ -6,16 +6,16 @@ import {
   Button,
   Textarea,
   Card,
-  Modal
 } from "flowbite-react";
 
 
 
-export default function RequestAccess({id, onClose}) {
+export default function RequestAccess({id}) {
     const [requestData, setRequestData] = useState({});
     const [publishError, setPublishError] = useState(null);
-    const [publishSuccess, setPublishSuccess] = useState(null);
+    const [publishSuccess, setPublishSuccess] = useState(false);
     const { currentUser, token } = useSelector((state) => state.user);
+    const [formSubmitted, setFormSubmitted] = useState(false);
 
     const handleChange = (e) => {
       const { id, value } = e.target;
@@ -27,7 +27,8 @@ export default function RequestAccess({id, onClose}) {
 
       const handleRequest = async () => {
         setPublishError(null);
-        setPublishSuccess(null)
+        setFormSubmitted(true);
+
         try {
           if (!currentUser) {
             console.error("User not authenticated");
@@ -50,19 +51,20 @@ export default function RequestAccess({id, onClose}) {
           if (!res.ok) {
             setPublishError(data.message);
             return;
-          }
-          setPublishSuccess("Request Sent Successfully")
+          } 
+   
+          setPublishSuccess(true);
           navigate(`/`);
-         
-          console.log("Request Sent Successfully")
+          
+          
+             
         } catch (error) {
           setPublishError("Something went wrong");
-          console.log(error)
         }
       };
 
   return (
-    <>
+
     <Card className="mx-auto my-auto rounded-2xl shadow-2xl">
       <form onSubmit={handleRequest}>
         <Label value="The service Name" />
@@ -125,22 +127,28 @@ export default function RequestAccess({id, onClose}) {
           required
         />
 
+{formSubmitted && !publishSuccess ? (
+        <Button type="button" color="success" disabled className="mx-auto mt-5">
+          Submitting...
+        </Button>
+      ) : formSubmitted && publishSuccess ? (
+        <Button type="button" color="success" className="mx-auto mt-5" onClick={() => window.location.href = "/"}>
+          <span role="img" aria-label="Success">&#10004;</span> Request Sent Successfully
+        </Button>
+      ) : (
         <Button type="submit" className="mx-auto mt-5" color="success">
           Submit Request
         </Button>
+      )}
         {publishError && (
           <Alert color="failure" className="mt-4 mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
             {publishError}
           </Alert>
         )}
+       
       
       </form>
     </Card>
-      {publishSuccess && (
-        <Alert color="success" className="mt-4 mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
-          {publishSuccess}
-        </Alert>
-      )}
-      </>
+
   )
 }

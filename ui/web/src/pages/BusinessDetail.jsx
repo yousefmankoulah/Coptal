@@ -1,4 +1,4 @@
-import { Button, Badge, Rating, Table , Card } from "flowbite-react";
+import { Button, Rating, Table , Card } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -23,7 +23,7 @@ export default function BusinessDetail() {
   const { currentUser, token } = useSelector((state) => state.user);
   const [comment, setComment] = useState({});
   const [showModal, setShowModal] = useState(false);
-
+  
   const { id } = useParams();
 
  

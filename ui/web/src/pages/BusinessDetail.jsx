@@ -1,13 +1,15 @@
-import { Button, Rating, Table , Card } from "flowbite-react";
+import { Button, Rating, Table , Card, Modal } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import RequestAccess from "../components/RequestAccess";
 import CustomModal from "../components/CustomeModal";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 
 // Fix the default icon issue with Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -23,8 +25,10 @@ export default function BusinessDetail() {
   const { currentUser, token } = useSelector((state) => state.user);
   const [comment, setComment] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   const { id } = useParams();
+  const navigate = useNavigate();
 
  
   const handleKeyPress = (event) => {
@@ -133,6 +137,31 @@ export default function BusinessDetail() {
   );
 
 
+  const handleDeletePost = async () => {
+    setShowDeleteModal(false);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_DOMAIN}/api/business/deleteBusiness/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        navigate(`/`);
+        setShowDeleteModal(true)
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen mt-20">
@@ -190,7 +219,7 @@ export default function BusinessDetail() {
         
         <div className="justify-center items-center p-4 rounded-2xl">
           
-          {!showModal && formData.servingArea && formData.servingArea.location && (
+          {!showModal && !showDeleteModal && formData.servingArea && formData.servingArea.location && (
             <>
             <p className="text-center text-xl mt-6 mb-2 font-bold">Serving Area in {formData.servingArea.zipCode}</p>
             <MapContainer
@@ -220,7 +249,9 @@ export default function BusinessDetail() {
           {formData.userId === currentUser._id ? (
              <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 mx-auto">
             <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
-            <Button className="bg-red-700 text-white w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="red">Delete the Business</Button>
+            <Button className="bg-red-700 text-white w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="red" onClick={() => {
+                      setShowDeleteModal(true);
+                    }}>Delete the Business</Button>
           </div>
           ): (
             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center mx-auto gap-2">
@@ -284,6 +315,33 @@ export default function BusinessDetail() {
         <p className="text-center text-gray-500">No ratings or comments exist</p>
       )}
     </Card>
+
+
+    <Modal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this Business?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeletePost}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowDeleteModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
     </div>
   )
 }

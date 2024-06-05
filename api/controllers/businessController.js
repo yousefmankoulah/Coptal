@@ -1,8 +1,9 @@
 import { errorHandler } from "../utils/error.js";
-import { Business } from "../models/businessModel.js";
+import { Business, Review } from "../models/businessModel.js";
 import { deleteFileFromStorage } from "../utils/firebaseConfig.js";
 import { User } from "../models/userModel.js";
 import { getCoordinates, getDistance } from "../utils/geolocation.js";
+import { OrderRequest } from "../models/orderModels.js";
 
 
 const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/;
@@ -146,32 +147,50 @@ export const updateBusiness = async (req, res, next) => {
   }
 };
 
+
+//You have to add deleting notifications, order, rating.
+const isFirebaseStorageUrl = (url) => {
+  return url.includes('firebasestorage.googleapis.com');
+};
+
 export const deleteBusiness = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const businessId = req.params._id;
 
-    const businessInforamtion = await Business.findOne({
-      userId: userId,
-      _id: businessId,
-    });
-    if (!businessInforamtion) {
-      return res
-        .status(404)
-        .json({ message: "You are not allowed to delete the business info" });
-    }
     const businessInfo = await Business.findById(businessId);
-    const filename = businessInfo.businessLogo;
-    await deleteFileFromStorage(filename);
-    const business = await Business.findByIdAndRemove(businessId);
-    if (!business) {
+    await Review.deleteMany({businessId: businessId})
+    await OrderRequest.deleteMany({businessId: businessId})
+
+    if (!businessInfo) {
       return res.status(404).json({ message: "Business not found" });
     }
+
+    if (businessInfo.userId.toString() !== userId) {
+      return res.status(403).json({ message: "You are not allowed to delete this business info" });
+    }
+
+    const filename = businessInfo.businessLogo;
+
+    if (isFirebaseStorageUrl(filename)) {
+      try {
+        await deleteFileFromStorage(filename);
+        console.log('File deleted from storage');
+      } catch (err) {
+        console.error(`Error deleting file: ${err.message}`);
+      }
+    }
+
+    await Business.findByIdAndDelete(businessId)
+
     res.json({ message: "Business deleted successfully" });
   } catch (err) {
-    next(errorHandler(err, res));
+    next((req, res) => {
+      res.status(500).json({ message: errorHandler(err, res) });
+    });
   }
 };
+
 
 export const getABusiness = async (req, res, next) => {
   try {

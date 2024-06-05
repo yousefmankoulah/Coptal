@@ -6,6 +6,7 @@ import {
   Button,
   Textarea,
   Card,
+  Alert
 } from "flowbite-react";
 
 
@@ -26,6 +27,7 @@ export default function RequestAccess({id}) {
     };
 
       const handleRequest = async () => {
+      
         setPublishError(null);
         setFormSubmitted(true);
 
@@ -52,12 +54,9 @@ export default function RequestAccess({id}) {
             setPublishError(data.message);
             return;
           } 
-   
           setPublishSuccess(true);
           navigate(`/`);
-          
-          
-             
+
         } catch (error) {
           setPublishError("Something went wrong");
         }
@@ -127,7 +126,7 @@ export default function RequestAccess({id}) {
           required
         />
 
-{formSubmitted && !publishSuccess ? (
+    {formSubmitted && !publishSuccess ? (
         <Button type="button" color="success" disabled className="mx-auto mt-5">
           Submitting...
         </Button>
@@ -141,7 +140,7 @@ export default function RequestAccess({id}) {
         </Button>
       )}
         {publishError && (
-          <Alert color="failure" className="mt-4 mx-auto lg:w-1/2 xl:w-1/4 md:w-1/2 sm:w-3/4 xs:w-full">
+          <Alert color="failure" className="mt-4 mx-auto w-full">
             {publishError}
           </Alert>
         )}

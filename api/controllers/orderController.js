@@ -50,7 +50,6 @@ export const sendingRequest = async (req, res, next) => {
     res.status(201).json({ message: "Order request sent successfully" });
   } catch (err) {
     next(errorHandler(res, err));
-    console.log(err)
   }
 };
 

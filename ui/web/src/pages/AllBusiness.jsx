@@ -2,6 +2,8 @@ import { Button, Badge, Rating, TextInput, Label, Select, Alert, Spinner } from 
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import RequestAccess from "../components/RequestAccess";
+import CustomModal from "../components/CustomeModal";
 
 export default function AllBusiness() {
   const [formData, setFormData] = useState({});
@@ -10,11 +12,21 @@ export default function AllBusiness() {
   const { currentUser, token } = useSelector((state) => state.user);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [postId, setPostId] = useState("");
+
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,6 +96,24 @@ export default function AllBusiness() {
   }, [formData]);
 
 
+  useEffect(() => {
+    setFilteredCustomers(
+      businesses.filter(
+        (customer) => 
+          customer.businessName
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          customer.businessCategory
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+            customer.businessDescription
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [businesses, searchQuery]);
+
+ 
   return (
     <div className="min-h-screen mt-20">
       <div className="container mx-auto p-4">
@@ -140,13 +170,24 @@ export default function AllBusiness() {
           )}
         </form>
        
+       
         {businesses.length > 0 ? (
           <div className="flex flex-col gap-4 lg:w-2/3 md:w-3/4 mx-auto mt-10">
-            {businesses.map((business, index) => (
+             <div className="mb-2 mt-4 text-black">
+        <input
+          type="text"
+          placeholder="Search for local business"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="input input-bordered w-1/4 rounded-xl"
+        />
+      </div>
+            {filteredCustomers.map((business, index) => (
               <div 
                 key={business._id} 
                 className="w-full flex flex-col lg:flex-row bg-white shadow-2xl rounded-2xl overflow-hidden"
               >
+                
                 <div className="h-36 lg:h-auto lg:w-48 flex-none bg-cover text-center overflow-hidden">
                   <img 
                     src={business.businessLogo} 
@@ -184,17 +225,44 @@ export default function AllBusiness() {
                       </div>
                     )}
                   </div>
-                  <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2">
 
-                    <Button type="button" color="success" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
-                      Request Order
-                    </Button>
+                  {currentUser ? (
+          <>
+          {business.userId === currentUser._id ? (
+             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 mx-auto">
+            <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
+            <Button type="button" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
+                <Link to={`/businessDetail/${business._id}`}>View Detail</Link>
+              </Button>
+          </div>
+          ): (
+            <div className="mt-4 flex flex-col sm:flex-row justify-center items-center mx-auto gap-2">
+            <Button color="success" className="w-full sm:w-auto px-6 py-2 text-lg"  onClick={() => {
+              setShowModal(true)
+              setPostId(business._id);
+            }}>Open Request Access</Button>
+           
+            <CustomModal showModal={showModal} onClose={handleCloseModal}>
+              <RequestAccess id={postId} /> 
+            </CustomModal>
 
-                    <Button type="button" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
-                      <Link to={`/businessDetail/${business._id}`}>View Detail</Link>
-                    </Button>
+              <Button type="button" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
+                <Link to={`/businessDetail/${business._id}`}>View Detail</Link>
+              </Button>
 
-                  </div>
+            </div>
+          )}
+          </>
+        ): (
+          <>
+          <Button className="mx-auto" color="success">
+            <Link to="/sign-in" className="text-white no-underline">
+              Request Access
+            </Link>
+          </Button>
+          </>
+        )}
+                 
                 </div>
               </div>
             ))}

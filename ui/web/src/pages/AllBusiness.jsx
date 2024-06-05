@@ -1,7 +1,7 @@
 import { Button, Badge, Rating, TextInput, Label, Select, Alert, Spinner } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import RequestAccess from "../components/RequestAccess";
 import CustomModal from "../components/CustomeModal";
 
@@ -18,6 +18,18 @@ export default function AllBusiness() {
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const businessCategory = searchParams.get("businessCategory");
+    const zipCode = searchParams.get("zipCode");
+    if (businessCategory && zipCode) {
+      setFormData({ businessCategory, zipCode });
+      searchBusinesses(businessCategory, zipCode);
+    }
+  }, [searchParams]);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -28,13 +40,11 @@ export default function AllBusiness() {
   };
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const searchBusinesses = async (businessCategory, zipCode) => {
     setPublishError(null);
     setLoading(true);
 
     try {
-      const { zipCode, businessCategory } = formData;
       const res = await fetch(
         `${import.meta.env.VITE_DOMAIN}/api/business/search?zipCode=${zipCode}&businessCategory=${businessCategory}`,
         {
@@ -58,6 +68,12 @@ export default function AllBusiness() {
       setPublishError("Something went wrong");
       setLoading(false);
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { zipCode, businessCategory } = formData;
+    setSearchParams({ businessCategory, zipCode });
   };
 
   const renderStars = (rating) => {
@@ -242,8 +258,8 @@ export default function AllBusiness() {
               setPostId(business._id);
             }}>Open Request Access</Button>
            
-            <CustomModal showModal={showModal} onClose={handleCloseModal}>
-              <RequestAccess id={postId} /> 
+           <CustomModal showModal={showModal} onClose={handleCloseModal}>
+              <RequestAccess id={postId} onClose={handleCloseModal} />
             </CustomModal>
 
               <Button type="button" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">

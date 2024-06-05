@@ -228,7 +228,7 @@ export default function BusinessDetail() {
             <Button color="blue" className="w-full sm:w-auto px-6 py-2 text-lg">Leave a Comment</Button>
 
             <CustomModal showModal={showModal} onClose={handleCloseModal}>
-              <RequestAccess id={id} /> 
+              <RequestAccess id={id} onClose={handleCloseModal} />
             </CustomModal>
           
           

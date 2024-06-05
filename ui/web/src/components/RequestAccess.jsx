@@ -1,69 +1,67 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  Label,
-  TextInput,
-  Button,
-  Textarea,
-  Card,
-  Alert
-} from "flowbite-react";
+import { Label, TextInput, Button, Textarea, Card, Alert } from "flowbite-react";
 
+export default function RequestAccess({ id, onClose }) {
+  const [requestData, setRequestData] = useState({
+    service: "",
+    serviceDate: "",
+    serviceDescription: "",
+    zipcode: "",
+    phoneNumber: "",
+    offerPrice: ""
+  });
+  const [publishError, setPublishError] = useState(null);
+  const [publishSuccess, setPublishSuccess] = useState(false);
+  const { currentUser, token } = useSelector((state) => state.user);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setRequestData((prevState) => ({
+      ...prevState,
+      [id]: value
+    }));
+  };
 
-export default function RequestAccess({id}) {
-    const [requestData, setRequestData] = useState({});
-    const [publishError, setPublishError] = useState(null);
-    const [publishSuccess, setPublishSuccess] = useState(false);
-    const { currentUser, token } = useSelector((state) => state.user);
-    const [formSubmitted, setFormSubmitted] = useState(false);
+  const handleRequest = async (e) => {
+    e.preventDefault();
+    setPublishError(null);
+    setFormSubmitted(true);
 
-    const handleChange = (e) => {
-      const { id, value } = e.target;
-      setRequestData(prevState => ({
-        ...prevState,
-        [id]: value
-      }));
-    };
+    try {
+      if (!currentUser) {
+        console.error("User not authenticated");
+        return;
+      }
 
-      const handleRequest = async () => {
-      
-        setPublishError(null);
-        setFormSubmitted(true);
-
-        try {
-          if (!currentUser) {
-            console.error("User not authenticated");
-            return;
-          }
-    
-          const res = await fetch(
-            `${import.meta.env.VITE_DOMAIN}/api/order/sendRequest/${id}`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(requestData),
-            }
-          );
-          const data = await res.json();
-    
-          if (!res.ok) {
-            setPublishError(data.message);
-            return;
-          } 
-          setPublishSuccess(true);
-          navigate(`/`);
-
-        } catch (error) {
-          setPublishError("Something went wrong");
+      const res = await fetch(
+        `${import.meta.env.VITE_DOMAIN}/api/order/sendRequest/${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
         }
-      };
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPublishError(data.message);
+        return;
+      }
+      setPublishSuccess(true);
+      setTimeout(() => {
+        onClose(); // Close the modal after a short delay
+      }, 1500); // Adjust the delay as needed
+    } catch (error) {
+      setPublishError("Something went wrong");
+    }
+  };
 
   return (
-
     <Card className="mx-auto my-auto rounded-2xl shadow-2xl">
       <form onSubmit={handleRequest}>
         <Label value="The service Name" />
@@ -126,28 +124,25 @@ export default function RequestAccess({id}) {
           required
         />
 
-    {formSubmitted && !publishSuccess ? (
-        <Button type="button" color="success" disabled className="mx-auto mt-5">
-          Submitting...
-        </Button>
-      ) : formSubmitted && publishSuccess ? (
-        <Button type="button" color="success" className="mx-auto mt-5" onClick={() => window.location.href = "/"}>
-          <span role="img" aria-label="Success">&#10004;</span> Request Sent Successfully
-        </Button>
-      ) : (
-        <Button type="submit" className="mx-auto mt-5" color="success">
-          Submit Request
-        </Button>
-      )}
+        {formSubmitted && !publishSuccess ? (
+          <Button type="button" color="success" disabled className="mx-auto mt-5">
+            Submitting...
+          </Button>
+        ) : formSubmitted && publishSuccess ? (
+          <Button type="button" color="success" className="mx-auto mt-5">
+            <span role="img" aria-label="Success" style={{ color: "white" }}>&#10004;</span> Request Sent Successfully
+          </Button>
+        ) : (
+          <Button type="submit" className="mx-auto mt-5" color="success">
+            Submit Request
+          </Button>
+        )}
         {publishError && (
           <Alert color="failure" className="mt-4 mx-auto w-full">
             {publishError}
           </Alert>
         )}
-       
-      
       </form>
     </Card>
-
-  )
+  );
 }

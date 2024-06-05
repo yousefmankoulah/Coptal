@@ -28,7 +28,7 @@ export default function BusinessDetail() {
 
  
   const handleKeyPress = (event) => {
-    if (event.key === "r") { // Change "r" to any key you want to trigger the modal
+    if (event.key === "r") { 
       setShowModal(true);
     }
   };

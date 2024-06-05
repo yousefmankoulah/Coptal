@@ -246,7 +246,7 @@ export default function AllBusiness() {
           <>
           {business.userId === currentUser._id ? (
              <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 mx-auto">
-            <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
+            <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success"><Link to={`/updateBusiness/${business._id}`}>Update the Business</Link></Button>
             <Button type="button" color="blue" className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg">
                 <Link to={`/businessDetail/${business._id}`}>View Detail</Link>
               </Button>

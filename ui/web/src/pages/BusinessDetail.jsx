@@ -248,7 +248,7 @@ export default function BusinessDetail() {
           <>
           {formData.userId === currentUser._id ? (
              <div className="mt-4 flex flex-col sm:flex-row justify-center items-center gap-2 mx-auto">
-            <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success">Update the Business</Button>
+            <Button className="w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="success"> <Link to={`/updateBusiness/${id}`}>Update the Business</Link></Button>
             <Button className="bg-red-700 text-white w-full sm:w-1/2 sm:w-auto px-6 py-2 text-lg" color="red" onClick={() => {
                       setShowDeleteModal(true);
                     }}>Delete the Business</Button>

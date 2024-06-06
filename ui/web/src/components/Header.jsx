@@ -149,7 +149,7 @@ export default function Header() {
                   {currentUser.email}
                 </span>
               </Dropdown.Header>
-              <Link to={`/profile/${currentUser._id}`}>
+              <Link to={`/updateUser/${currentUser._id}`}>
                 <Dropdown.Item>Profile</Dropdown.Item>
               </Link>
               <Dropdown.Divider />

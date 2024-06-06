@@ -92,3 +92,19 @@ export const orderRequestStatus = async (req, res, next) => {
     next(errorHandler(res, err));
   }
 };
+
+
+
+export const gettingRequest = async (req, res, next) => {
+    try {
+        const order = await OrderRequest.findById(req.params._id)
+        if(order.userId !== req.user.id || order.customerId !== req.user.id){
+          return res
+        .status(400)
+        .json({ message: "You are not able to view this Order" });
+        }
+        res.status(200).json(order);
+    } catch (error) {
+      next(errorHandler(error));
+    }
+}

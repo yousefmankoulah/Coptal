@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import UpdateBusiness from "./pages/UpdateBusiness";
 import BusinessDetail from "./pages/BusinessDetail";
 import { UpdateUser } from "./pages/UpdateUser";
+import RequestDetail from "./pages/RequestDetail";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/updateBusiness/:id" element={<UpdateBusiness />} />
           <Route path="/updateUser/:id" element={<UpdateUser />} />
           <Route path="/dashboard/:id" element={<Dashboard />} />
+          <Route path="/RequestDetail/:id" element={<RequestDetail />} />
         </Route>
       </Routes>
 

@@ -108,3 +108,50 @@ export const gettingRequest = async (req, res, next) => {
       next(errorHandler(error));
     }
 }
+
+
+export const gettingRequestForBusiness = async (req, res, next) => {
+  try {
+    const order = await OrderRequest.find({ userId: req.user.id });
+    if (!order || order.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No orders found for this user" });
+    }
+
+    for (let orders of order) {
+      if (orders.userId.toString() !== req.user.id.toString()) {
+        return res
+          .status(400)
+          .json({ message: "You are not able to view this Order" });
+      }
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+    next(errorHandler(error));
+  }
+};
+
+export const gettingRequestForCustomer = async (req, res, next) => {
+  try {
+    const order = await OrderRequest.find({ customerId: req.user.id });
+
+    if (!order || order.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No orders found for this user" });
+    }
+
+    for (let orders of order) {
+      if (orders.customerId.toString() !== req.user.id.toString()) {
+        return res
+          .status(400)
+          .json({ message: "You are not able to view this Order" });
+      }
+    }
+    res.status(200).json(order);
+  } catch (error) {
+    next(errorHandler(error));
+  }
+};

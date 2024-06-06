@@ -255,7 +255,7 @@ export default function BusinessDetail() {
           </div>
           ): (
             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center mx-auto gap-2">
-            <Button color="success" className="w-full sm:w-auto px-6 py-2 text-lg"  onClick={() => setShowModal(true)}>Open Request Access</Button>
+            <Button color="success" className="w-full sm:w-auto px-6 py-2 text-lg"  onClick={() => setShowModal(true)}>Request Service</Button>
             <Button color="blue" className="w-full sm:w-auto px-6 py-2 text-lg">Leave a Comment</Button>
 
             <CustomModal showModal={showModal} onClose={handleCloseModal}>

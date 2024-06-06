@@ -256,7 +256,7 @@ export default function AllBusiness() {
             <Button color="success" className="w-full sm:w-auto px-6 py-2 text-lg"  onClick={() => {
               setShowModal(true)
               setPostId(business._id);
-            }}>Open Request Access</Button>
+            }}>Request Service</Button>
            
            <CustomModal showModal={showModal} onClose={handleCloseModal}>
               <RequestAccess id={postId} onClose={handleCloseModal} />

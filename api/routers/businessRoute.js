@@ -6,7 +6,8 @@ import {
   getABusiness,
   getBusinessesByLocation,
   updateBusiness,
-  checkBusinessName
+  checkBusinessName,
+  checkBusinessNameForUpdate
 } from "../controllers/businessController.js";
 import {
   addRating,
@@ -25,6 +26,8 @@ router.delete("/deleteBusiness/:_id", verifyToken, deleteBusiness);
 router.get("/getABusiness/:_id", getABusiness);
 router.get("/search", getBusinessesByLocation);
 router.post("/checkBusinessName", checkBusinessName)
+router.post("/checkBusinessNameForUpdate/:_id", checkBusinessNameForUpdate)
+
 
 //rating routes
 

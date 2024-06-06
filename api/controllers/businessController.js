@@ -93,9 +93,8 @@ export const updateBusiness = async (req, res, next) => {
       businessDescription,
       businessCategory,
     } = req.body;
-    if (!businessName || !zipCode || !rangeInMiles || !businessCategory) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
+   
+
     const userId = req.user.id;
     const businessId = req.params._id;
 
@@ -263,3 +262,17 @@ export const checkBusinessName = async (req, res, next) => {
       next(error)
   }
 }
+
+export const checkBusinessNameForUpdate = async (req, res, next) => {
+  try {
+    const businessId = req.params._id
+    const lowerCaseName = businessName.toLowerCase();
+    const existingBusiness = await Business.findOne({
+      businessName: { $regex: new RegExp(`^${lowerCaseName}$`, 'i') },
+      _id: { $ne: businessId }, // Exclude the current business
+    });
+    res.json({ exists: !!existingBusiness });
+  } catch (error) {
+    next(error);
+  }
+};

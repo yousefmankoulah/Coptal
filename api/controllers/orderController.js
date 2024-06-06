@@ -96,18 +96,29 @@ export const orderRequestStatus = async (req, res, next) => {
 
 
 export const gettingRequest = async (req, res, next) => {
-    try {
-        const order = await OrderRequest.findById(req.params._id)
-        if(order.userId !== req.user.id || order.customerId !== req.user.id){
-          return res
+  try {
+    const order = await OrderRequest.findById(req.params._id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (
+      order.userId.toString() !== req.user.id.toString() &&
+      order.customerId.toString() !== req.user.id.toString()
+    ) {
+      return res
         .status(400)
         .json({ message: "You are not able to view this Order" });
-        }
-        res.status(200).json(order);
-    } catch (error) {
-      next(errorHandler(error));
     }
-}
+
+    res.status(200).json(order);
+  } catch (error) {
+    console.error("Error:", error); // Log any errors
+    next(errorHandler(error));
+  }
+};
+
 
 
 export const gettingRequestForBusiness = async (req, res, next) => {

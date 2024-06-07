@@ -51,8 +51,7 @@ export default function RequestService() {
             customer.service
               ?.toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
-            customer.serviceDate?.includes(searchQuery) ||
-            customer.zipcode?.includes(searchQuery)
+            customer.serviceDate?.includes(searchQuery) 
         )
       );
     }, [requestService, searchQuery]);
@@ -62,7 +61,7 @@ export default function RequestService() {
         <div className="mb-2 mt-4 text-black">
           <input
             type="text"
-            placeholder="Search by business Name, Zipcode, or Service Name"
+            placeholder="Search by Service Name, Offer Price, or Service description"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="input input-bordered w-1/4 rounded-xl"

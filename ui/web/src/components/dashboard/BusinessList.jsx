@@ -101,7 +101,7 @@ export default function BusinessList() {
   
 
     return (
-      <div className="container mr-auto ml-auto table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+      <div className="container mr-auto ml-auto md:mx-auto p-3">
         <div className="mb-2 mt-4 lg:w-2/3 md:w-3/4 mx-auto text-black">
           <input
             type="text"

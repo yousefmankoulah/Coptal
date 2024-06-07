@@ -77,7 +77,7 @@ export default function RequestService() {
             Service Name
             </Table.HeadCell>
             <Table.HeadCell className="bg-slate-700 text-white">
-            Offer Price
+            Status
             </Table.HeadCell>
             <Table.HeadCell className="bg-slate-700 text-white">
               Updates
@@ -107,7 +107,15 @@ export default function RequestService() {
                     {customer.service}
                   </Table.Cell>
                   <Table.Cell className="light:bg-slate-50">
-                    {customer.offerPrice}
+                    {customer.status}{currentUser.role === "business" && customer.paid ?(
+                      <p>
+                        {" "},Paid
+                      </p>
+                    ): (
+                      <p>
+                        {" "},Unpaid
+                      </p>
+                    )}
                   </Table.Cell>
                   <Table.Cell className="light:bg-slate-50">
                     <Link

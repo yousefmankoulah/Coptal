@@ -251,6 +251,15 @@ export const getBusinessesByLocation = async (req, res, next) => {
   }
 };
 
+export const getBusinessForOwner = async (req, res, next) => {
+  try {
+    const business = await Business.find({userId: req.user.id})
+    res.json(business);
+  } catch (error) {
+    next(error);
+  }
+}
+
 
 export const checkBusinessName = async (req, res, next) => {
   const { businessName } = req.body;

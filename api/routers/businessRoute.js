@@ -7,7 +7,8 @@ import {
   getBusinessesByLocation,
   updateBusiness,
   checkBusinessName,
-  checkBusinessNameForUpdate
+  checkBusinessNameForUpdate,
+  getBusinessForOwner
 } from "../controllers/businessController.js";
 import {
   addRating,
@@ -23,6 +24,7 @@ const router = express.Router();
 router.post("/addBusiness/:_id", verifyToken, addBusiness);
 router.put("/updateBusiness/:_id", verifyToken, updateBusiness);
 router.delete("/deleteBusiness/:_id", verifyToken, deleteBusiness);
+router.get("/getBusinessForOwner", verifyToken, getBusinessForOwner);
 router.get("/getABusiness/:_id", getABusiness);
 router.get("/search", getBusinessesByLocation);
 router.post("/checkBusinessName", checkBusinessName)

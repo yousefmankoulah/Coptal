@@ -37,7 +37,7 @@ export default function RequestDetail() {
 
         getRequestInfo()
       }, []);
-    
+    console.log(formData)
   return (
     <div>
         <h1>{formData.service}</h1>

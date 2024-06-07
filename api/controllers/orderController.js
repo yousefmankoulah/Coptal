@@ -97,7 +97,7 @@ export const orderRequestStatus = async (req, res, next) => {
 
 export const gettingRequest = async (req, res, next) => {
   try {
-    const order = await OrderRequest.findById(req.params._id);
+    const order = await OrderRequest.findById(req.params._id).populate("businessId");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -123,7 +123,7 @@ export const gettingRequest = async (req, res, next) => {
 
 export const gettingRequestForBusiness = async (req, res, next) => {
   try {
-    const order = await OrderRequest.find({ userId: req.user.id });
+    const order = await OrderRequest.find({ userId: req.user.id }).populate("businessId");
     if (!order || order.length === 0) {
       return res
         .status(400)
@@ -146,7 +146,7 @@ export const gettingRequestForBusiness = async (req, res, next) => {
 
 export const gettingRequestForCustomer = async (req, res, next) => {
   try {
-    const order = await OrderRequest.find({ customerId: req.user.id });
+    const order = await OrderRequest.find({ customerId: req.user.id }).populate("businessId");
 
     if (!order || order.length === 0) {
       return res

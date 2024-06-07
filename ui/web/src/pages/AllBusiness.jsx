@@ -114,20 +114,34 @@ export default function AllBusiness() {
 
   useEffect(() => {
     setFilteredCustomers(
-      businesses.filter(
-        (customer) => 
-          customer.businessName
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          customer.businessCategory
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-            customer.businessDescription
-              ?.toLowerCase()
-              .includes(searchQuery.toLowerCase())
-      )
+      businesses.filter((customer) => {
+        const searchQueryLower = searchQuery.toLowerCase();
+  
+        const matchesBusinessName = customer.businessName
+          ?.toLowerCase()
+          .includes(searchQueryLower);
+        const matchesBusinessCategory = customer.businessCategory
+          ?.toLowerCase()
+          .includes(searchQueryLower);
+        const matchesBusinessDescription = customer.businessDescription
+          ?.toLowerCase()
+          .includes(searchQueryLower);
+        
+        // Check if any of the business services match the search query
+        const matchesServiceName = customer.businessServices?.some((service) =>
+          service.serviceName?.toLowerCase().includes(searchQueryLower)
+        );
+  
+        return (
+          matchesBusinessName ||
+          matchesBusinessCategory ||
+          matchesBusinessDescription ||
+          matchesServiceName
+        );
+      })
     );
   }, [businesses, searchQuery]);
+  
 
  
   return (

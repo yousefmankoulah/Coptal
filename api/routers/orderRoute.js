@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.post("/sendRequest/:_id", verifyToken, sendingRequest);
-router.post("/orderStatus/:_id", verifyToken, orderRequestStatus);
+router.put("/orderStatus/:_id", verifyToken, orderRequestStatus);
 router.get("/getOrderDetail/:_id", verifyToken, gettingRequest);
 router.get("/getOrderDetailBusiness", verifyToken, gettingRequestForBusiness);
 router.get("/getOrderDetailCustomer", verifyToken, gettingRequestForCustomer);

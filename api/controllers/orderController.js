@@ -62,13 +62,14 @@ export const orderRequestStatus = async (req, res, next) => {
       return res.status(404).json({ message: "Order request not found" });
     }
 
-    if (orderRequest.userId !== req.user.id) {
+    if (orderRequest.userId.toString() !== req.user.id) {
       return res
         .status(403)
         .json({
           message: "You are not authorized to update this order request",
         });
     }
+   
     if (orderRequest.status === "Canceled") {
       return res
         .status(400)
@@ -79,17 +80,15 @@ export const orderRequestStatus = async (req, res, next) => {
         .status(400)
         .json({ message: "Order request already accepted" });
     }
-    if (status === true) {
-      orderRequest.status = "Accepted";
-    } else {
-      orderRequest.status = "Canceled";
-    }
+    
+    orderRequest.status = status;
+   
     await orderRequest.save();
     res
       .status(200)
       .json({ message: "Order request status updated successfully" });
   } catch (err) {
-    next(errorHandler(res, err));
+    next(errorHandler(err));
   }
 };
 
@@ -123,7 +122,7 @@ export const gettingRequest = async (req, res, next) => {
 
 export const gettingRequestForBusiness = async (req, res, next) => {
   try {
-    const order = await OrderRequest.find({ userId: req.user.id }).populate("businessId");
+    const order = await OrderRequest.find({ userId: req.user.id }).populate("businessId").sort({ createdAt: -1 });
     if (!order || order.length === 0) {
       return res
         .status(400)
@@ -146,7 +145,7 @@ export const gettingRequestForBusiness = async (req, res, next) => {
 
 export const gettingRequestForCustomer = async (req, res, next) => {
   try {
-    const order = await OrderRequest.find({ customerId: req.user.id }).populate("businessId");
+    const order = await OrderRequest.find({ customerId: req.user.id }).populate("businessId").sort({ createdAt: -1 });
 
     if (!order || order.length === 0) {
       return res

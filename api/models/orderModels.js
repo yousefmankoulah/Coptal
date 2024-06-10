@@ -39,14 +39,22 @@ const OrderRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Accepted", "Canceled"],
+    enum: ["Pending", "Accepted", "Canceled"],
+    default: "Pending"
   },
   paid: {
     type: Boolean,
     default: false,
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
 const OrderRequest = mongoose.model("OrderRequest", OrderRequestSchema);
 
 export { OrderRequest };
+
+

@@ -18,9 +18,11 @@ export default function Notification() {
           });
           const data = await res.json();
           if (res.ok) {
+            if (data.length > notification.length) {
+              playBeepSound();
+            }
             setNotification(data);
           } else {
-            // Handle unauthorized access or other errors
             console.error("Error fetching customers:", data.message);
           }
         }
@@ -29,8 +31,13 @@ export default function Notification() {
       }
     };
 
+    const playBeepSound = () => {
+      const beep = new Audio('/path/to/beep.mp3'); // Adjust the path to your beep sound file
+      beep.play();
+    };
+
     fetchNotifications();
-  }, [currentUser, token]);
+  }, [currentUser, token, notification]);
 
   const handleNotificationClick = async (notificationId) => {
     try {

@@ -1,6 +1,6 @@
 import { Business, Review } from "../models/businessModel.js";
 import { errorHandler } from "../utils/error.js";
-import { User } from "../models/userModel.js";
+import { Notification, User } from "../models/userModel.js";
 
 
 const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/;
@@ -47,6 +47,17 @@ export const addRating = async (req, res, next) => {
       { rating: averageRating },
       { new: true }
     );
+
+    const coach = await User.findById(business.userId.toString())
+
+    const notify = new Notification({
+      user: business.userId.toString(),
+      customer: req.user.id,
+      message: `${coach.fullName} has rated your business`,
+      postId: saveOrderRequest._id,
+      classification: "rating",
+    });
+    await notify.save();
 
     res.status(201).json({ message: "Rating added successfully" });
   } catch (error) {

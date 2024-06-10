@@ -1,7 +1,7 @@
 import { errorHandler } from "../utils/error.js";
 import { Business } from "../models/businessModel.js";
-import { User } from "../models/userModel.js";
 import { OrderRequest } from "../models/orderModels.js";
+import { Notification, User } from "../models/userModel.js";
 
 export const sendingRequest = async (req, res, next) => {
   const customerId = req.user.id;
@@ -47,11 +47,25 @@ export const sendingRequest = async (req, res, next) => {
       offerPrice,
     });
     await saveOrderRequest.save();
+
+    const coach = await User.findById(business.userId.toString())
+
+    const notify = new Notification({
+      user: business.userId.toString(),
+      customer: req.user.id,
+      message: `Customer ${coach.fullName} has requested ${saveOrderRequest.service} for you`,
+      postId: saveOrderRequest._id,
+      classification: "requestBusiness",
+    });
+    await notify.save();
+
     res.status(201).json({ message: "Order request sent successfully" });
   } catch (err) {
     next(errorHandler(res, err));
   }
 };
+
+
 
 export const orderRequestStatus = async (req, res, next) => {
   try {
@@ -84,6 +98,31 @@ export const orderRequestStatus = async (req, res, next) => {
     orderRequest.status = status;
    
     await orderRequest.save();
+
+
+    const coach = await User.findById(req.user.id)
+    if(status === "Accepted") {
+      const notify = new Notification({
+        user: orderRequest.customerId.toString(),
+        customer: req.user.id,
+        message: `Business for ${coach.fullName} has accepted your request and will call you shortly`,
+        postId: orderRequest._id,
+        classification: "requestCustomer",
+      });
+      await notify.save();
+    } else if (status === "Canceled") {
+      const notify = new Notification({
+        user: req.user.id,
+        customer: orderRequest.customerId.toString(),
+        message: `Business for ${coach.fullName} has rejected your request`,
+        postId: orderRequest._id,
+        classification: "requestCustomer",
+      });
+      await notify.save();
+    }
+    
+
+
     res
       .status(200)
       .json({ message: "Order request status updated successfully" });

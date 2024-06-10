@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { HiOutlineBellAlert } from "react-icons/hi2";
-// import Notification from "./Notification";
+import Notification from "./Notification";
 import { useEffect, useState, useRef } from "react";
 
 export default function Header() {
@@ -38,57 +38,55 @@ export default function Header() {
     }
   };
 
-  //   useEffect(() => {
-  //     // Function to handle click outside notification area
-  //     const handleClickOutside = (event) => {
-  //       if (
-  //         notificationRef.current &&
-  //         !notificationRef.current.contains(event.target)
-  //       ) {
-  //         setShowModal(false); // Hide the notification modal only if clicked outside
-  //       }
-  //     };
-  //     // Add event listener when the component mounts
-  //     document.addEventListener("mousedown", handleClickOutside);
+  useEffect(() => {
+    // Function to handle click outside notification area
+    const handleClickOutside = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowModal(false); // Hide the notification modal only if clicked outside
+      }
+    };
+    // Add event listener when the component mounts
+    document.addEventListener("mousedown", handleClickOutside);
 
-  //     // Clean up by removing the event listener when the component unmounts
-  //     return () => {
-  //       document.removeEventListener("mousedown", handleClickOutside);
-  //     };
-  //   }, []);
+    // Clean up by removing the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  //   useEffect(() => {
-  //     const fetchNotifications = async () => {
-  //       try {
-  //         if (currentUser && currentUser._id) {
-  //           const url =
-  //             currentUser.role === "coach"
-  //               ? `https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/api/auth/notifyCoach/${currentUser._id}`
-  //               : `https://cautious-journey-5xx4666q445cvjp5-3000.app.github.dev/api/auth/notifyCustomer/${currentUser.userId}/${currentUser._id}`;
-  //           const res = await fetch(url, {
-  //             headers: {
-  //               Authorization: `Bearer ${token}`,
-  //             },
-  //           });
-  //           const data = await res.json();
-  //           if (res.ok) {
-  //             // Filter notifications to show only unread notifications
-  //             const unreadNotifications = data.filter(
-  //               (notification) => !notification.status
-  //             );
-  //             setNotification(unreadNotifications);
-  //           } else {
-  //             // Handle unauthorized access or other errors
-  //             console.error("Error fetching customers:", data.message);
-  //           }
-  //         }
-  //       } catch (error) {
-  //         console.log(error.message);
-  //       }
-  //     };
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        if (currentUser && currentUser._id) {
+          const url = `${import.meta.env.VITE_DOMAIN}/api/auth/notify`;
+          const res = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const data = await res.json();
+          if (res.ok) {
+            // Filter notifications to show only unread notifications
+            const unreadNotifications = data.filter(
+              (notification) => !notification.status
+            );
+            setNotification(unreadNotifications);
+          } else {
+            // Handle unauthorized access or other errors
+            console.error("Error fetching customers:", data.message);
+          }
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
 
-  //     fetchNotifications();
-  //   }, [currentUser]);
+    fetchNotifications();
+  }, [currentUser]);
+
 
   return (
     <>
@@ -113,7 +111,7 @@ export default function Header() {
               {theme === "light" ? <FaSun /> : <FaMoon />}
             </span>
           </Button>
-          {/* {currentUser && (
+          {currentUser && (
             <Button
               className="w-12 h-10 hidden sm:flex items-center justify-center"
               color="gray"
@@ -129,7 +127,7 @@ export default function Header() {
                 </div>
               )} 
             </Button>
-          )} */}
+          )}
 
           {currentUser ? (
             <Dropdown
@@ -204,11 +202,11 @@ export default function Header() {
         </Navbar.Collapse>
       </Navbar>
 
-      {/* {showModal && (
+      {showModal && (
         <div className="notification-modal" ref={notificationRef}>
           <Notification />
         </div>
-      )} */}
+      )}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Button, Rating, Table , Card, Modal } from "flowbite-react";
+import { Button, Rating, Table , Card, Modal, TextInput, Label } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import L from 'leaflet';
 import RequestAccess from "../components/RequestAccess";
 import CustomModal from "../components/CustomeModal";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import ReactStars from "react-rating-stars-component";
 
 
 // Fix the default icon issue with Leaflet
@@ -26,6 +27,19 @@ export default function BusinessDetail() {
   const [comment, setComment] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [rating, setRatingData] = useState({ rating: 0, comment: "" });
+  
+
+
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setRatingData((prevRating) => ({
+      ...prevRating,
+      [id]: value.trim(),
+    }));
+  };
   
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,6 +51,7 @@ export default function BusinessDetail() {
     }
   };
 
+
   useEffect(() => {
     window.addEventListener("keypress", handleKeyPress);
     return () => {
@@ -47,6 +62,7 @@ export default function BusinessDetail() {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+
 
   useEffect(() => {
     const handleSubmit = async () => {
@@ -162,6 +178,35 @@ export default function BusinessDetail() {
   };
 
 
+  const handleRatingBusiness = async (e) => {
+    e.preventDefault();
+    setShowRatingModal(false);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_DOMAIN}/api/business/addRating/${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(rating)
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        setComment((prevComments) => [...prevComments, data]);
+        setShowRatingModal(false);
+        setRatingData({ rating: 0, comment: "" }); 
+        
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
 
   return (
     <div className="min-h-screen mt-20">
@@ -170,7 +215,7 @@ export default function BusinessDetail() {
             <img 
               src={formData.businessLogo} 
               alt={`${formData.businessName} company logo`} 
-              className="w-full h-full object-cover rounded-full"
+              className="w-48 h-48 object-cover rounded-full"
              />
         </div>
 
@@ -219,7 +264,7 @@ export default function BusinessDetail() {
         
         <div className="justify-center items-center p-4 rounded-2xl">
           
-          {!showModal && !showDeleteModal && formData.servingArea && formData.servingArea.location && (
+          {!showModal && !showRatingModal && !showDeleteModal && formData.servingArea && formData.servingArea.location && (
             <>
             <p className="text-center text-xl mt-6 mb-2 font-bold">Serving Area in {formData.servingArea.zipCode}</p>
             <MapContainer
@@ -256,7 +301,10 @@ export default function BusinessDetail() {
           ): (
             <div className="mt-4 flex flex-col sm:flex-row justify-center items-center mx-auto gap-2">
             <Button color="success" className="w-full sm:w-auto px-6 py-2 text-lg"  onClick={() => setShowModal(true)}>Request Service</Button>
-            <Button color="blue" className="w-full sm:w-auto px-6 py-2 text-lg">Leave a Comment</Button>
+            <Button color="blue" className="w-full sm:w-auto px-6 py-2 text-lg" onClick={() => {
+                      setShowRatingModal(true);
+                  
+                    }}>Leave a Comment</Button>
 
             <CustomModal showModal={showModal} onClose={handleCloseModal}>
               <RequestAccess id={id} onClose={handleCloseModal} />
@@ -297,7 +345,10 @@ export default function BusinessDetail() {
                 alt="Profile"
               />
               <div className="flex-1">
-                <h4 className="font-bold text-lg">{comments.userId.fullName}</h4>
+                {comments.userId && (
+                  <h4 className="font-bold text-lg">{comments.userId.fullName}</h4>
+                )}
+                
                 <div className="mt-2 lg:mt-0">
                   <Rating>
                     <RatingStars rating={comments.rating} />
@@ -341,6 +392,65 @@ export default function BusinessDetail() {
           </div>
         </Modal.Body>
       </Modal>
+
+
+      <Modal
+        show={showRatingModal}
+        onClose={() => setShowRatingModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Leave Rating and Comment
+            </h3>
+            <form onSubmit={handleRatingBusiness}>
+            <ReactStars
+              id="rating"
+              name="rating"
+              count={5}
+              value={rating.rating}
+              onChange={(newRating) => {
+                setRatingData((prevRating) => ({
+                  ...prevRating,
+                  rating: newRating,
+                }));
+              }}
+              size={35}
+              activeColor="#ffd700"
+              classNames="mx-auto"
+              isHalf={true}
+              emptyIcon={<i className="far fa-star"></i>}
+              halfIcon={<i className="fa fa-star-half-alt"></i>}
+              fullIcon={<i className="fa fa-star"></i>}
+             
+            />
+
+              <Label value="Add your comment" className="font-bold mb-2 mt-2" />
+              <TextInput 
+                id="comment"
+                value={rating.comment}
+                type="text"
+                name="comment"
+                placeholder="Your comment"
+                onChange={handleChange}
+              />
+            <div className="flex justify-center gap-4 mt-5">             
+              <Button color="success" type="submit">
+                Submit
+              </Button>
+              <Button color="gray" onClick={() => setShowRatingModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+            </form>
+          </div>
+        </Modal.Body>
+      </Modal>
+
 
     </div>
   )

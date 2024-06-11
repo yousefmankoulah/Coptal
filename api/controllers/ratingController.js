@@ -15,14 +15,11 @@ export const addRating = async (req, res, next) => {
     const userId = req.user.id;
     const business = await Business.findById(businessId);
     if (!business) {
-      return next(new errorHandler("Business not found", 404));
+      return next(errorHandler("Business not found", 404));
     }
     const user = await User.findById(userId);
     if (!user) {
-      return next(new errorHandler("User not found", 404));
-    }
-    if (user.role !== "customer") {
-      return next(new errorHandler("Only customers can add ratings", 403));
+      return next(errorHandler("User not found", 404));
     }
 
     if (phoneRegex.test(comment) || emailRegex.test(comment) || addressRegex.test(comment)) {
@@ -54,7 +51,7 @@ export const addRating = async (req, res, next) => {
       user: business.userId.toString(),
       customer: req.user.id,
       message: `${coach.fullName} has rated your business`,
-      postId: saveOrderRequest._id,
+      postId: business._id,
       classification: "rating",
     });
     await notify.save();
@@ -145,7 +142,7 @@ export const getBusinessReview = async (req, res, next) => {
     const businessId = req.params.businessId;
     const reviews = await Review.find({ businessId: businessId }).populate(
       "userId"
-    );
+    ).sort({ createdAt: -1 });
     if (!reviews) {
       return next(new errorHandler("Reviews are not found", 404));
     }

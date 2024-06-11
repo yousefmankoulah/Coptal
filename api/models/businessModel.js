@@ -104,7 +104,8 @@ const ReviewSchema = new mongoose.Schema({
         // Ensure the number has at most one decimal place
         return v.toString().match(/^\d+(\.\d{1})?$/);
       },
-      message: props => `${props.value} is not a valid rating! Rating must be a number with at most one decimal place.`,
+      message: (props) =>
+        `${props.value} is not a valid rating! Rating must be a number with at most one decimal place.`,
     },
   },
   comment: {

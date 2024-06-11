@@ -39,7 +39,7 @@ export const addRating = async (req, res, next) => {
     addBusinessRating.forEach((rating) => {
       totalRating += rating.rating;
     });
-    const averageRating = totalRating / addBusinessRating.length.toFixed(1);
+    const averageRating = (totalRating / addBusinessRating.length).toFixed(1);
     await Business.findByIdAndUpdate(
       businessId,
       { businessTotalRating: averageRating },

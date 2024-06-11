@@ -1,4 +1,4 @@
-import { Button, Rating, Table , Card, Modal, TextInput, Label } from "flowbite-react";
+import { Button, Rating, Table , Card, Modal, TextInput, Label, Dropdown } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import RequestAccess from "../components/RequestAccess";
 import CustomModal from "../components/CustomeModal";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import ReactStars from "react-rating-stars-component";
-
+import { FaEllipsisV } from "react-icons/fa";
 
 // Fix the default icon issue with Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -29,13 +29,34 @@ export default function BusinessDetail() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRatingData] = useState({ rating: 0, comment: "" });
-  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(null);
+  const [updateComment, setUpdateComment] = useState({});
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
+  const [postId, setPostId] = useState("");
 
+
+
+  const toggleDropdown = (index) => {
+    if (isDropdownOpen === index) {
+      setIsDropdownOpen(null);
+    } else {
+      setIsDropdownOpen(index);
+    }
+  };
 
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setRatingData((prevRating) => ({
+      ...prevRating,
+      [id]: value.trim(),
+    }));
+  };
+
+  const handleCommentChange = (e) => {
+    const { id, value } = e.target;
+    setUpdateComment((prevRating) => ({
       ...prevRating,
       [id]: value.trim(),
     }));
@@ -120,7 +141,7 @@ export default function BusinessDetail() {
 
     handleSubmit()
     getComment()
-  }, [])
+  }, [updateComment, comment])
 
 
   const renderStars = (rating) => {
@@ -177,6 +198,33 @@ export default function BusinessDetail() {
     }
   };
 
+  const handleDeleteComment = async () => {
+    setShowDeleteCommentModal(false);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_DOMAIN}/api/business/deleteComment/${postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        setIsDropdownOpen(null);
+        setShowDeleteCommentModal(false)
+        setComment((prev) =>
+          prev.filter((post) => post._id !== postId)
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
 
   const handleRatingBusiness = async (e) => {
     e.preventDefault();
@@ -206,6 +254,37 @@ export default function BusinessDetail() {
       console.log(error.message);
     }
   };
+
+
+  const handleUpdateComment = async (e) => {
+    e.preventDefault();
+    setShowUpdateModal(false);
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_DOMAIN}/api/business/updateComment/${postId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateComment)
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        setComment((prevComments) => [...prevComments, data]);
+        navigate(`/businessDetail/${id}`)
+        setShowUpdateModal(false);
+        setIsDropdownOpen(null);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
 
 
   return (
@@ -257,7 +336,7 @@ export default function BusinessDetail() {
     </div>
     )}
 
-        <div className="mt-10 mb-5">
+        <div className="mt-10 mb-5 mx-auto">
           <span className="text-blue-950 text-left">{formData.businessDescription}</span>
         </div>
 
@@ -335,10 +414,47 @@ export default function BusinessDetail() {
       {comment && comment.length > 0 ? (
         <>
           {comment.map((comments, index) => (
-            <div
-              key={index}
-              className="flex flex-col lg:flex-row items-start bg-gray-100 p-6 rounded-lg shadow-md space-y-4 lg:space-y-0 lg:space-x-4"
-            >
+               <div
+               key={index}
+               className="relative flex flex-col lg:flex-row items-start bg-gray-100 p-6 rounded-lg shadow-md space-y-4 lg:space-y-0 lg:space-x-4"
+             >
+    
+              {comments.userId && currentUser._id === comments.userId._id && (
+                <div className="absolute top-4 right-4">
+                <div className="relative">
+                  <button
+                    onClick={() => toggleDropdown(index)}
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                  >
+                    <FaEllipsisV />
+                  </button>
+                  {isDropdownOpen === index && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                      <button
+                        onClick={() => {
+                        setShowUpdateModal(true);
+                        setPostId(comments._id)
+                      }}
+                        className="block w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        Update your comment
+                      </button>
+                      <hr />
+                      <button
+                        onClick={() => {
+                        setShowDeleteCommentModal(true);
+                        setPostId(comments._id)
+                      }}
+                        className="block w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        Delete your comment
+                      </button>
+                    </div>
+                  )}
+                </div>
+                </div>
+              )}
+               
               <img
                 src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                 className="rounded-full w-24 h-24"
@@ -386,6 +502,32 @@ export default function BusinessDetail() {
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => setShowDeleteModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+
+      <Modal
+        show={showDeleteCommentModal}
+        onClose={() => setShowDeleteCommentModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this Comment?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeleteComment}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowDeleteCommentModal(false)}>
                 No, cancel
               </Button>
             </div>
@@ -443,6 +585,44 @@ export default function BusinessDetail() {
                 Submit
               </Button>
               <Button color="gray" onClick={() => setShowRatingModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+            </form>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+
+      <Modal
+        show={showUpdateModal}
+        onClose={() => setShowUpdateModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Add or Update your Comment
+            </h3>
+            <form onSubmit={handleUpdateComment}>
+
+              <Label value="Add your comment" className="font-bold mb-2 mt-2" />
+              <TextInput 
+                id="comment"
+                value={updateComment.comment}
+                type="text"
+                name="comment"
+                placeholder="Your comment"
+                onChange={handleCommentChange}
+              />
+            <div className="flex justify-center gap-4 mt-5">             
+              <Button color="success" type="submit">
+                Update
+              </Button>
+              <Button color="gray" onClick={() => setShowUpdateModal(false)}>
                 No, cancel
               </Button>
             </div>

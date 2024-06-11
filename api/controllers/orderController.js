@@ -2,6 +2,13 @@ import { errorHandler } from "../utils/error.js";
 import { Business } from "../models/businessModel.js";
 import { OrderRequest } from "../models/orderModels.js";
 import { Notification, User } from "../models/userModel.js";
+import { Stripe } from 'stripe';
+
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY, {
+  appInfo: {
+    name: "Coptal",
+  },
+});
 
 export const sendingRequest = async (req, res, next) => {
   const customerId = req.user.id;
@@ -202,5 +209,53 @@ export const gettingRequestForCustomer = async (req, res, next) => {
     res.status(200).json(order);
   } catch (error) {
     next(errorHandler(error));
+  }
+};
+
+
+
+export const payment = async (req, res, next) => {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 500, // Amount in cents, $5 = 500 cents
+      currency: "usd",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+
+    }, { apiKey: process.env.STRIPE_SECRET_KEY });
+
+    res.status(200).json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error("Error creating payment intent:", error);
+    res.status(500).json({ error: 'Failed to create payment intent' });
+  }
+}
+
+
+export const orderRequestPayment = async (req, res, next) => {
+  try {
+    const orderRequestId = req.params._id;
+    const orderRequest = await OrderRequest.findById(orderRequestId);
+    if (!orderRequest) {
+      return res.status(404).json({ message: "Order request not found" });
+    }
+
+    if (orderRequest.userId.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({
+          message: "You are not authorized to update this order request",
+        });
+    }
+    
+    orderRequest.paid = true;
+    await orderRequest.save();
+
+    res
+      .status(200)
+      .json({ message: "Order status updated successfully" });
+  } catch (err) {
+    next(errorHandler(err));
   }
 };

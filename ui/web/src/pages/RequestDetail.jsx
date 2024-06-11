@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Alert, Modal, Button } from "flowbite-react";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import CheckoutForm  from '../components/CheckoutForm.jsx';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUB_KEY);
 
 
 
@@ -15,6 +19,30 @@ export default function RequestDetail() {
     const [showModal, setShowModal] = useState(false);
 
     const navigate = useNavigate();
+    const [clientSecret, setClientSecret] = useState('');
+
+    
+
+    useEffect(() => {
+      const fetchClientSecret = async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_DOMAIN}/api/order/payment/${id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const data = await response.json();
+          setClientSecret(data.clientSecret);
+        } catch (error) {
+          console.error("Error fetching client secret:", error);
+        }
+      };
+  
+      fetchClientSecret();
+    }, [id, token]);
+
 
     useEffect(() => {
         const getRequestInfo = async () => {
@@ -131,14 +159,14 @@ export default function RequestDetail() {
     </div>
   
     {formData.status === "Accepted" && formData.paid === true ? (
-      <Card className="w-full shadow-2xl rounded-2xl mb-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-5">
+      <Card className="w-full shadow-2xl rounded-2xl mb-10 p-5">
         <h4 className="font-bold text-2xl text-center mb-5 mt-5">
           Customer Phone Number
         </h4>
         <div className="flex flex-col items-center">
           <a
             href={`tel:${formData.phoneNumber}`}
-            className="text-3xl font-bold mt-5 mb-5 underline hover:text-yellow-400 transition duration-300"
+            className="text-3xl font-bold mt-5 mb-5 text-white p-5 rounded-3xl transition duration-300 bg-blue-800"
           >
             Call the Customer
           </a>
@@ -174,7 +202,7 @@ export default function RequestDetail() {
 
     {formData.status === "Accepted" && formData.paid === false && (
         <>
-          <Button color="success" className="mx-auto mt-5 mb-5">Pay 5$ Now</Button>
+          <Button onClick={() => setShowModal(true)} color="success" className="mx-auto mt-5 mb-5">Pay 5$ for the Info</Button>
         </>
     )}
 
@@ -187,18 +215,18 @@ export default function RequestDetail() {
         <Modal.Header />
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+          <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
+            Coptal
+          </span>
+            <h3 className="mb-5 font-bold text-lg text-gray-500 dark:text-gray-400">
               Pay 5$ to get the customer Phone number.
             </h3>
-            <div className="flex justify-center gap-4">
-              <Button color="success" >
-                Yes, Pay
-              </Button>
-              <Button color="failure" onClick={() => setShowModal(false)}>
-                No, cancel
-              </Button>
-            </div>
+            
+            {clientSecret && (
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm id={id} />
+              </Elements>
+            )}
           </div>
         </Modal.Body>
       </Modal>

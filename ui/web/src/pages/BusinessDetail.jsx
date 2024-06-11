@@ -559,7 +559,9 @@ export default function BusinessDetail() {
         <Modal.Header />
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+          <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
+            Coptal
+          </span>
             <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
               Leave Rating and Comment
             </h3>
@@ -622,7 +624,9 @@ export default function BusinessDetail() {
         <Modal.Header />
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+          <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
+            Coptal
+          </span>
             <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
               Add or Update your Comment
             </h3>

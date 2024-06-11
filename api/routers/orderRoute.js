@@ -6,6 +6,8 @@ import {
   gettingRequestForCustomer,
   orderRequestStatus,
   sendingRequest,
+  payment,
+  orderRequestPayment
 } from "../controllers/orderController.js";
 
 const router = express.Router();
@@ -17,4 +19,6 @@ router.get("/getOrderDetailBusiness", verifyToken, gettingRequestForBusiness);
 router.get("/getOrderDetailCustomer", verifyToken, gettingRequestForCustomer);
 
 
+router.post("/payment/:_id", payment);
+router.put("/orderRequestPayment/:_id", verifyToken, orderRequestPayment);
 export default router;

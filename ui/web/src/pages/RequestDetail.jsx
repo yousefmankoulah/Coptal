@@ -65,12 +65,12 @@ export default function RequestDetail() {
                   }
                   setFormData(data)
             } catch(err) {
-                setPublishError(error);
+                setPublishError(err);
             }
         }
 
         getRequestInfo()
-      }, [formData.status, formData.paid]);
+      }, [formData.status, formData.paid, clientSecret]);
     
       const handleStatusUpdate = async (newStatus) => {
         setStatus(newStatus);

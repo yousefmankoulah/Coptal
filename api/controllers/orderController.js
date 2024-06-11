@@ -217,7 +217,7 @@ export const gettingRequestForCustomer = async (req, res, next) => {
 export const payment = async (req, res, next) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 500, // Amount in cents, $5 = 500 cents
+      amount: 500,
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,
@@ -251,7 +251,6 @@ export const orderRequestPayment = async (req, res, next) => {
     
     orderRequest.paid = true;
     await orderRequest.save();
-
     res
       .status(200)
       .json({ message: "Order status updated successfully" });

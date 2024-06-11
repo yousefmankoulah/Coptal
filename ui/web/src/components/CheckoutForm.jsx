@@ -41,6 +41,7 @@ export default function CheckoutForm({id}) {
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
+          console.log("success")
           fetchClientSecret()
           break;
         case "processing":

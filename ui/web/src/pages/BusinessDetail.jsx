@@ -34,7 +34,7 @@ export default function BusinessDetail() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
   const [postId, setPostId] = useState("");
-
+  const [publishError, setPublishError] = useState(null);
 
 
   const toggleDropdown = (index) => {
@@ -89,7 +89,7 @@ export default function BusinessDetail() {
     const handleSubmit = async () => {
   
       try {
-      
+        
         const res = await fetch(
           `${import.meta.env.VITE_DOMAIN}/api/business/getABusiness/${id}`,
           {
@@ -102,21 +102,21 @@ export default function BusinessDetail() {
         const data = await res.json();
   
         if (!res.ok) {
-          console.log(data.message);
+          setPublishError(data.message);
           return;
         }
-  
+        setPublishError(null);
         setFormData(data);
       } catch (error) {
-        console.log("Something went wrong");
+        setPublishError("Something went wrong");
       }
     };
 
 
     const getComment = async () => {
-  
-      try {
       
+      try {
+        
         const res = await fetch(
           `${import.meta.env.VITE_DOMAIN}/api/business/getBusinessReview/${id}`,
           {
@@ -129,19 +129,19 @@ export default function BusinessDetail() {
         const data = await res.json();
   
         if (!res.ok) {
-          console.log(data.message);
+          setPublishError(data.message);
           return;
         }
-  
+        setPublishError(null);
         setComment(data);
       } catch (error) {
-        console.log("Something went wrong");
+        setPublishError("Something went wrong");
       }
     };
 
     handleSubmit()
     getComment()
-  }, [updateComment, comment])
+  }, [updateComment, comment, currentUser])
 
 
   const renderStars = (rating) => {
@@ -176,6 +176,7 @@ export default function BusinessDetail() {
 
   const handleDeletePost = async () => {
     setShowDeleteModal(false);
+    setPublishError(null);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_DOMAIN}/api/business/deleteBusiness/${id}`,
@@ -188,18 +189,20 @@ export default function BusinessDetail() {
       );
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        setPublishError(data.message);
       } else {
         navigate(`/`);
         setShowDeleteModal(true)
+        setPublishError(null);
       }
     } catch (error) {
-      console.log(error.message);
+      setPublishError(error.message);
     }
   };
 
   const handleDeleteComment = async () => {
     setShowDeleteCommentModal(false);
+    setPublishError(null);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_DOMAIN}/api/business/deleteComment/${postId}`,
@@ -212,16 +215,17 @@ export default function BusinessDetail() {
       );
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        setPublishError(data.message);
       } else {
         setIsDropdownOpen(null);
         setShowDeleteCommentModal(false)
         setComment((prev) =>
           prev.filter((post) => post._id !== postId)
         );
+        setPublishError(null);
       }
     } catch (error) {
-      console.log(error.message);
+      setPublishError(error.message);
     }
   };
 
@@ -229,6 +233,7 @@ export default function BusinessDetail() {
   const handleRatingBusiness = async (e) => {
     e.preventDefault();
     setShowRatingModal(false);
+    setPublishError(null);
     try {
       const res = await fetch(
         `${import.meta.env.VITE_DOMAIN}/api/business/addRating/${id}`,
@@ -243,21 +248,22 @@ export default function BusinessDetail() {
       );
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        setPublishError(data.message);
       } else {
         setComment((prevComments) => [...prevComments, data]);
         setShowRatingModal(false);
         setRatingData({ rating: 0, comment: "" }); 
-        
+        setPublishError(null);
       }
     } catch (error) {
-      console.log(error.message);
+      setPublishError(error.message);
     }
   };
 
 
   const handleUpdateComment = async (e) => {
     e.preventDefault();
+    setPublishError(null);
     setShowUpdateModal(false);
     try {
       const res = await fetch(
@@ -273,15 +279,16 @@ export default function BusinessDetail() {
       );
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        setPublishError(data.message);
       } else {
         setComment((prevComments) => [...prevComments, data]);
         navigate(`/businessDetail/${id}`)
         setShowUpdateModal(false);
         setIsDropdownOpen(null);
+        setPublishError(null);
       }
     } catch (error) {
-      console.log(error.message);
+      setPublishError(error.message);
     }
   };
 
@@ -388,10 +395,7 @@ export default function BusinessDetail() {
             <CustomModal showModal={showModal} onClose={handleCloseModal}>
               <RequestAccess id={id} onClose={handleCloseModal} />
             </CustomModal>
-          
-          
-            
-     
+
             </div>
           )}
           </>
@@ -505,6 +509,11 @@ export default function BusinessDetail() {
                 No, cancel
               </Button>
             </div>
+            {publishError && (
+            <Alert color="failure" className="mt-4">
+              {publishError}
+            </Alert>
+          )}
           </div>
         </Modal.Body>
       </Modal>
@@ -531,6 +540,11 @@ export default function BusinessDetail() {
                 No, cancel
               </Button>
             </div>
+            {publishError && (
+            <Alert color="failure" className="mt-4">
+              {publishError}
+            </Alert>
+          )}
           </div>
         </Modal.Body>
       </Modal>
@@ -588,6 +602,11 @@ export default function BusinessDetail() {
                 No, cancel
               </Button>
             </div>
+            {publishError && (
+            <Alert color="failure" className="mt-4">
+              {publishError}
+            </Alert>
+          )}
             </form>
           </div>
         </Modal.Body>
@@ -626,12 +645,21 @@ export default function BusinessDetail() {
                 No, cancel
               </Button>
             </div>
+            {publishError && (
+            <Alert color="failure" className="mt-4">
+              {publishError}
+            </Alert>
+          )}
             </form>
           </div>
         </Modal.Body>
       </Modal>
 
-
+      {publishError && (
+            <Alert color="failure" className="mt-4">
+              {publishError}
+            </Alert>
+          )}
     </div>
   )
 }

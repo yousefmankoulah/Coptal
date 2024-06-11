@@ -1,6 +1,7 @@
 import { Business, Review } from "../models/businessModel.js";
 import { errorHandler } from "../utils/error.js";
 import { Notification, User } from "../models/userModel.js";
+import { OrderRequest } from "../models/orderModels.js";
 
 
 const phoneRegex = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/;
@@ -8,7 +9,7 @@ const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
 const addressRegex = /\b\d{1,5}\s+\w+\s+\w+\b/;
 
 export const addRating = async (req, res, next) => {
-  // only successful order able to rate but not now
+  
   try {
     const { rating, comment } = req.body;
     const businessId = req.params._id;
@@ -20,6 +21,11 @@ export const addRating = async (req, res, next) => {
     const user = await User.findById(userId);
     if (!user) {
       return next(errorHandler("User not found", 404));
+    }
+
+    const requestUser = await OrderRequest.find({customerId: req.user.id})
+    if (!requestUser){
+      return next(errorHandler("You didn't order from this business to submit a rating", 404));
     }
 
     if (phoneRegex.test(comment) || emailRegex.test(comment) || addressRegex.test(comment)) {

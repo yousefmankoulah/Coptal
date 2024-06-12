@@ -3,12 +3,12 @@ import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { useSelector } from "react-redux";
 import { Alert } from "flowbite-react";
 
-export default function CheckoutForm({id}) {
+export default function CheckoutForm({ id }) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { currentUser, token } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (!stripe) {
@@ -22,27 +22,27 @@ export default function CheckoutForm({id}) {
     }
 
     const fetchClientSecret = async () => {
-        try {
-          const response = await fetch(`${import.meta.env.VITE_DOMAIN}/api/order/orderRequestPayment/${id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          await response.json();
+      try {
+        const response = await fetch(`${import.meta.env.VITE_DOMAIN}/api/order/orderRequestPayment/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        await response.json();
+      } catch (error) {
+        console.error("Error fetching client secret:", error);
+      }
+    };
 
-        } catch (error) {
-          console.error("Error fetching client secret:", error);
-        }
-      };
-
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+    const checkPaymentStatus = async () => {
+      const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
-          console.log("success")
-          fetchClientSecret()
+          console.log("success");
+          fetchClientSecret();
           break;
         case "processing":
           setMessage("Your payment is processing.");
@@ -54,8 +54,10 @@ export default function CheckoutForm({id}) {
           setMessage("Something went wrong.");
           break;
       }
-    });
-  }, [stripe]);
+    };
+
+    checkPaymentStatus();
+  }, [stripe, id, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +71,7 @@ export default function CheckoutForm({id}) {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/RequestDetail/${id}`, 
+        return_url: `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/RequestDetail/${id}`,
       },
     });
 
@@ -87,7 +89,7 @@ export default function CheckoutForm({id}) {
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
       <button disabled={isLoading || !stripe || !elements} id="submit" className="w-full mx-auto mt-5 mb-5 bg-green-700 p-5 rounded-2xl text-white font-bold text-2xl">
         <span id="button-text">
-          {isLoading ? <div className="spinner text-white" id="spinner"></div> : "Pay $5"}
+          {isLoading ? <div className="spinner text-white bg-white" id="spinner"></div> : "Pay $5"}
         </span>
       </button>
       {message && <Alert className="mt-5" color="success" id="payment-message">{message}</Alert>}

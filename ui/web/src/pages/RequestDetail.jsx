@@ -70,7 +70,7 @@ export default function RequestDetail() {
         }
 
         getRequestInfo()
-      }, [formData.status, formData.paid, clientSecret]);
+      }, [formData.status, formData.paid, clientSecret, showModal, status]);
     
       const handleStatusUpdate = async (newStatus) => {
         setStatus(newStatus);
@@ -184,7 +184,11 @@ export default function RequestDetail() {
             <button
               type="button"
               className="w-16 h-16 rounded-full bg-green-500 flex justify-center items-center text-white text-2xl"
-              onClick={() => handleStatusUpdate("Accepted")}
+              onClick={() => {
+                handleStatusUpdate("Accepted")
+                setShowModal(true)
+              }
+              }
             >
               <i className="fas fa-check"></i>
             </button>

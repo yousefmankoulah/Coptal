@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useSelector } from "react-redux";
-import { Alert } from "flowbite-react";
+import { Alert, Spinner } from "flowbite-react";
 
 export default function CheckoutForm({ id }) {
   const stripe = useStripe();
@@ -11,15 +11,9 @@ export default function CheckoutForm({ id }) {
   const { token } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (!stripe) {
-      return;
-    }
+    if (!stripe) return;
 
     const clientSecret = new URLSearchParams(window.location.search).get("payment_intent_client_secret");
-
-    if (!clientSecret) {
-      return;
-    }
 
     const fetchClientSecret = async () => {
       try {
@@ -37,59 +31,74 @@ export default function CheckoutForm({ id }) {
     };
 
     const checkPaymentStatus = async () => {
-      const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-      switch (paymentIntent.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
-          console.log("success");
-          fetchClientSecret();
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          break;
+      if (!clientSecret) return;
+
+      try {
+        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+        switch (paymentIntent.status) {
+          case "succeeded":
+            setMessage("Payment succeeded!");
+            console.log("success");
+            await fetchClientSecret();
+            break;
+          case "processing":
+            setMessage("Your payment is processing.");
+            break;
+          case "requires_payment_method":
+            setMessage("Your payment was not successful, please try again.");
+            break;
+          default:
+            setMessage("Something went wrong.");
+            break;
+        }
+      } catch (error) {
+        console.error("Error checking payment status:", error);
+        setMessage("An error occurred while checking payment status.");
       }
     };
 
     checkPaymentStatus();
+   
   }, [stripe, id, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
+    if (!stripe || !elements) return;
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/RequestDetail/${id}`,
-      },
-    });
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/RequestDetail/${id}`,
+        },
+      });
+      
+      if (error) {
+        setMessage(error.message);
+        setIsLoading(false);
+        return;
+      }
 
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage("An unexpected error occurred.");
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      setMessage("An error occurred while confirming payment.");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
+    
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
       <button disabled={isLoading || !stripe || !elements} id="submit" className="w-full mx-auto mt-5 mb-5 bg-green-700 p-5 rounded-2xl text-white font-bold text-2xl">
         <span id="button-text">
-          {isLoading ? <div className="spinner text-white bg-white" id="spinner"></div> : "Pay $5"}
+          {isLoading ? (<div className="flex items-center">
+                <Spinner />
+                <span className="ml-2">Loading...</span>
+              </div>) : "Pay $5"}
         </span>
       </button>
       {message && <Alert className="mt-5" color="success" id="payment-message">{message}</Alert>}

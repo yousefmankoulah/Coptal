@@ -209,7 +209,7 @@ export default function RequestDetail() {
           <Button onClick={() => setShowModal(true)} color="success" className="mx-auto mt-5 mb-5">Pay 5$ for the Info</Button>
         </>
     )}
-
+    
     <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
@@ -234,7 +234,7 @@ export default function RequestDetail() {
           </div>
         </Modal.Body>
       </Modal>
-
+    
   
     {publishError && (
       <Alert className="mt-5" color="failure">

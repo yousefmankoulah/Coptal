@@ -10,7 +10,7 @@ export default function Notification() {
     const fetchNotifications = async () => {
       try {
         if (currentUser && currentUser._id) {
-          const url = `${import.meta.env.VITE_DOMAIN}/api/auth/notify`
+          const url = `${import.meta.env.VITE_DOMAIN}/api/auth/notify`;
           const res = await fetch(url, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -23,7 +23,7 @@ export default function Notification() {
             }
             setNotification(data);
           } else {
-            console.error("Error fetching customers:", data.message);
+            console.error("Error fetching notifications:", data.message);
           }
         }
       } catch (error) {
@@ -32,7 +32,7 @@ export default function Notification() {
     };
 
     const playBeepSound = () => {
-      const beep = new Audio('/path/to/beep.mp3'); // Adjust the path to your beep sound file
+      const beep = new Audio("/path/to/beep.mp3"); // Adjust the path to your beep sound file
       beep.play();
     };
 
@@ -78,97 +78,99 @@ export default function Notification() {
   };
 
   return (
-    <div className="fixed right-4 lg:w-1/4 sm:w-3/4 xs:w-4/5 bg-white text-black p-4">
-      {notification && notification.length ? (
-        <ul className="space-y-4">
-          {notification.map((notify) => (
-            <li key={notify.id} className="flex items-center">
-              {notify.classification === "rating" ? (
-                <Link
-                  to={`/businessDetail/${notify.postId}`}
-                  className="flex items-center w-full"
-                  onClick={() => handleNotificationClick(notify._id)}
-                >
-                  <div
-                    className={`w-3 h-3 rounded-full ${
-                      !notify.status ? "bg-green-500" : "bg-gray-500"
-                    } mr-2`}
-                  ></div>
+    <div className="fixed right-4 lg:w-1/4 sm:w-3/4 xs:w-4/5 bg-white text-black p-4 h-screen overflow-hidden">
+      <div className="overflow-y-auto h-full">
+        {notification && notification.length ? (
+          <ul className="space-y-4">
+            {notification.map((notify) => (
+              <li key={notify.id} className="flex items-center">
+                {notify.classification === "rating" ? (
+                  <Link
+                    to={`/businessDetail/${notify.postId}`}
+                    className="flex items-center w-full"
+                    onClick={() => handleNotificationClick(notify._id)}
+                  >
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        !notify.status ? "bg-green-500" : "bg-gray-500"
+                      } mr-2`}
+                    ></div>
 
-                  <div className="flex flex-col flex-grow">
-                    <span className={!notify.status ? "font-bold" : ""}>
-                      {notify.message}
-                    </span>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col flex-grow">
                       <span className={!notify.status ? "font-bold" : ""}>
-                        {formatDate(notify.date)}
+                        {notify.message}
                       </span>
-                      <span className={!notify.status ? "font-bold" : ""}>
-                        {formatTime(notify.date)}
-                      </span>
+                      <div className="flex justify-between">
+                        <span className={!notify.status ? "font-bold" : ""}>
+                          {formatDate(notify.date)}
+                        </span>
+                        <span className={!notify.status ? "font-bold" : ""}>
+                          {formatTime(notify.date)}
+                        </span>
+                      </div>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                </Link>
-              ) : notify.classification === "requestBusiness" ? (
-                <Link
-                  to={`/RequestDetail/${notify.postId}`}
-                  className="flex items-center w-full"
-                  onClick={() => handleNotificationClick(notify._id)}
-                >
-                  <div
-                    className={`w-3 h-3 rounded-full ${
-                      !notify.status ? "bg-green-500" : "bg-gray-500"
-                    } mr-2`}
-                  ></div>
-                  <div className="flex flex-col">
-                    <span className={!notify.status ? "font-bold" : ""}>
-                      {notify.message}
-                    </span>
-                    <div className="flex justify-between">
+                  </Link>
+                ) : notify.classification === "requestBusiness" ? (
+                  <Link
+                    to={`/RequestDetail/${notify.postId}`}
+                    className="flex items-center w-full"
+                    onClick={() => handleNotificationClick(notify._id)}
+                  >
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        !notify.status ? "bg-green-500" : "bg-gray-500"
+                      } mr-2`}
+                    ></div>
+                    <div className="flex flex-col">
                       <span className={!notify.status ? "font-bold" : ""}>
-                        {formatDate(notify.date)}
+                        {notify.message}
                       </span>
-                      <span className={!notify.status ? "font-bold" : ""}>
-                        {formatTime(notify.date)}
-                      </span>
+                      <div className="flex justify-between">
+                        <span className={!notify.status ? "font-bold" : ""}>
+                          {formatDate(notify.date)}
+                        </span>
+                        <span className={!notify.status ? "font-bold" : ""}>
+                          {formatTime(notify.date)}
+                        </span>
+                      </div>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                </Link>
-              ) : notify.classification === "requestCustomer" ? (
-                <Link
-                  to={`/RequestDetail/${notify.postId}`}
-                  className="flex items-center w-full"
-                  onClick={() => handleNotificationClick(notify._id)}
-                >
-                  <div
-                    className={`w-3 h-3 rounded-full ${
-                      !notify.status ? "bg-green-500" : "bg-gray-500"
-                    } mr-2`}
-                  ></div>
-                  <div className="flex flex-col">
-                    <span className={!notify.status ? "font-bold" : ""}>
-                      {notify.message}
-                    </span>
-                    <div className="flex justify-between">
+                  </Link>
+                ) : notify.classification === "requestCustomer" ? (
+                  <Link
+                    to={`/RequestDetail/${notify.postId}`}
+                    className="flex items-center w-full"
+                    onClick={() => handleNotificationClick(notify._id)}
+                  >
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        !notify.status ? "bg-green-500" : "bg-gray-500"
+                      } mr-2`}
+                    ></div>
+                    <div className="flex flex-col">
                       <span className={!notify.status ? "font-bold" : ""}>
-                        {formatDate(notify.date)}
+                        {notify.message}
                       </span>
-                      <span className={!notify.status ? "font-bold" : ""}>
-                        {formatTime(notify.date)}
-                      </span>
+                      <div className="flex justify-between">
+                        <span className={!notify.status ? "font-bold" : ""}>
+                          {formatDate(notify.date)}
+                        </span>
+                        <span className={!notify.status ? "font-bold" : ""}>
+                          {formatTime(notify.date)}
+                        </span>
+                      </div>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                </Link>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <span>No Notifications Sent to You</span>
-      )}
+                  </Link>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span>No Notifications Sent to You</span>
+        )}
+      </div>
     </div>
   );
 }

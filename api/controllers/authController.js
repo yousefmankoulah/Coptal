@@ -277,6 +277,7 @@ export const transporter = nodemailer.createTransport({
                 <a href="${resetLink}">Reset Password</a>
             `,
       });
+      res.status(200).json("Please check your email address inbox and spams");
     } catch (error) {
       console.error("Error sending password reset email:", error);
     }

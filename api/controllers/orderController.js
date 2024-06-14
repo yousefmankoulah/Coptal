@@ -3,6 +3,7 @@ import { Business } from "../models/businessModel.js";
 import { OrderRequest } from "../models/orderModels.js";
 import { Notification, User } from "../models/userModel.js";
 import { Stripe } from 'stripe';
+import { transporter } from "./authController.js";
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY, {
   appInfo: {
@@ -84,6 +85,17 @@ export const sendingRequest = async (req, res, next) => {
     });
     await notify.save();
 
+    const resetLink = `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/getOrderDetail/${saveOrderRequest._id}`;
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: saveOrderRequest.userId.email,
+      subject: "You recieved new Request",
+      html: `
+              <p>You have recieved new service request. Click the link below to view it:</p>
+              <a href="${resetLink}">Reset Password</a>
+          `,
+    });
+
     res.status(201).json({ message: "Order request sent successfully" });
   } catch (err) {
     next(errorHandler(res, err));
@@ -135,6 +147,15 @@ export const orderRequestStatus = async (req, res, next) => {
         classification: "requestCustomer",
       });
       await notify.save();
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: orderRequest.customerId.email,
+        subject: "Your Request accepted",
+        html: `
+                <p>Your request accepted and wait for recieving a phone call from the business phone number</p> 
+            `,
+      });
     } else if (status === "Canceled") {
       const notify = new Notification({
         user: req.user.id,
@@ -144,6 +165,15 @@ export const orderRequestStatus = async (req, res, next) => {
         classification: "requestCustomer",
       });
       await notify.save();
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: orderRequest.customerId.email,
+        subject: "Your Request Rejected",
+        html: `
+                <p>Your request rejected, please feel free to try to contact another businesses to help you with your service.</p>
+            `,
+      });
     }
     
 

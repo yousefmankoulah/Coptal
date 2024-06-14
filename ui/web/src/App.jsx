@@ -17,6 +17,8 @@ import UpdateBusiness from "./pages/UpdateBusiness";
 import BusinessDetail from "./pages/BusinessDetail";
 import { UpdateUser } from "./pages/UpdateUser";
 import RequestDetail from "./pages/RequestDetail";
+import SendEmailCoach from "./pages/ForgetPassword/SendEmailCoach";
+import ResetPassCoach from "./pages/ForgetPassword/ResetPassCoach";
 
 
 function App() {
@@ -33,6 +35,9 @@ function App() {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/" element={<AllBusiness />} />
         <Route path="/businessDetail/:id" element={<BusinessDetail />} />
+
+        <Route path="/forgetPasswordCoach" element={<SendEmailCoach />} />
+        <Route path="/ResetPasswordCoach/:id" element={<ResetPassCoach />} />
 
         <Route element={<OnlyAdminPrivateRoute />}></Route>
 

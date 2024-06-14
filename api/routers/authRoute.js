@@ -6,6 +6,8 @@ import {
   updateUser,
   signinGoogle,
   getCoachProfile,
+  sendPasswordResetEmailforCoach,
+  updatePassword,
 } from "../controllers/authController.js";
 import { verifyToken } from "../utils/verifyUser.js";
 
@@ -28,6 +30,11 @@ router.get("/coachProfile/:_id", getCoachProfile);
 router.get("/notify", verifyToken, getNotifications);
 
 router.put("/notifyRead/:_id/", verifyToken, NotificationRead);
+
+//forget password
+router.post("/forgetPasswordCoach", sendPasswordResetEmailforCoach);
+router.put("/updatePassword", updatePassword);
+
 
 
 export default router;

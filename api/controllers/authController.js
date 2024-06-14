@@ -199,6 +199,44 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+
+export const updatePassword = async (req, res, next) => {
+  const { password } = req.body;
+
+    if (password) {
+      schema.is().min(8).is().max(100).has().uppercase().has().lowercase();
+
+      if (!schema.validate(password)) {
+        return next(
+          errorHandler(
+            400,
+            "Password must be at least 8 characters long and contain at least one uppercase letter and one lowercase letter"
+          )
+        );
+      }
+      password = bcrypt.hashSync(password, 10);
+    }
+
+    try {
+      await User.findByIdAndUpdate(
+        {
+          _id: req.params._id,
+        },
+        {
+          $set: {
+            password: req.body.password,
+          },
+        },
+        { new: true }
+      );
+      res.status(200).json("password changed");
+      res.setHeader("Authorization", `Bearer ${token}`);
+    } catch (error) {
+      next(error);
+    }
+};
+
+
 export const getCoachProfile = async (req, res, next) => {
   try {
     const coach = await User.findOne({
@@ -211,7 +249,7 @@ export const getCoachProfile = async (req, res, next) => {
 };
 
 //forget the password
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
   port: 465,
@@ -222,21 +260,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-//   export const sendPasswordResetEmailforCoach = async (req, res, next) => {
-//     try {
-//       const { email } = req.body;
-//       const customer = await User.findOne({ email: email });
-//       const resetLink = `https://cautious-journey-5xx4666q445cvjp5-5173.app.github.dev/ResetPasswordCoach/${customer._id}`;
-//       await transporter.sendMail({
-//         from: process.env.EMAIL_USER,
-//         to: email,
-//         subject: "Password Reset",
-//         html: `
-//                 <p>You have requested a password reset. Click the link below to reset your password:</p>
-//                 <a href="${resetLink}">Reset Password</a>
-//             `,
-//       });
-//     } catch (error) {
-//       console.error("Error sending password reset email:", error);
-//     }
-//   };
+  export const sendPasswordResetEmailforCoach = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      const customer = await User.findOne({ email: email });
+      if (!customer) {
+        return next(errorHandler(403, "We didn't find your account using this email"));
+      }
+      const resetLink = `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/ResetPasswordCoach/${customer._id}`;
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Password Reset",
+        html: `
+                <p>You have requested a password reset. Click the link below to reset your password:</p>
+                <a href="${resetLink}">Reset Password</a>
+            `,
+      });
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+    }
+  };

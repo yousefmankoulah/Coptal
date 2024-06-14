@@ -10,6 +10,7 @@ export default function CheckoutForm({ id }) {
   const [isLoading, setIsLoading] = useState(false);
   const { token } = useSelector((state) => state.user);
 
+
   useEffect(() => {
     if (!stripe) return;
 
@@ -30,6 +31,8 @@ export default function CheckoutForm({ id }) {
       }
     };
 
+   
+
     const checkPaymentStatus = async () => {
       if (!clientSecret) return;
 
@@ -38,8 +41,8 @@ export default function CheckoutForm({ id }) {
         switch (paymentIntent.status) {
           case "succeeded":
             setMessage("Payment succeeded!");
-            console.log("success");
             await fetchClientSecret();
+            window.location.reload(true);
             break;
           case "processing":
             setMessage("Your payment is processing.");
@@ -74,12 +77,14 @@ export default function CheckoutForm({ id }) {
           return_url: `https://shiny-tribble-gj69pq4wv66cvxwq-5173.app.github.dev/RequestDetail/${id}`,
         },
       });
-      
+
+      window.location.reload(true);
       if (error) {
         setMessage(error.message);
         setIsLoading(false);
         return;
       }
+
 
     } catch (error) {
       console.error("Error confirming payment:", error);
@@ -93,11 +98,11 @@ export default function CheckoutForm({ id }) {
     
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
-      <button disabled={isLoading || !stripe || !elements} id="submit" className="w-full mx-auto mt-5 mb-5 bg-green-700 p-5 rounded-2xl text-white font-bold text-2xl">
-        <span id="button-text">
-          {isLoading ? (<div className="flex items-center">
+      <button disabled={isLoading || !stripe || !elements} id="submit" className="w-full mx-auto text-center mt-5 mb-5 bg-green-700 p-5 rounded-2xl text-white font-bold text-2xl">
+        <span id="button-text"> 
+          {isLoading ? (<div className="flex items-center mx-auto text-2xl text-center">
                 <Spinner />
-                <span className="ml-2">Loading...</span>
+                <span className="ml-2 mr-2 mx-auto text-2xl">Loading...</span>
               </div>) : "Pay $5"}
         </span>
       </button>

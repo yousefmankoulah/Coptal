@@ -27,6 +27,24 @@ export const sendingRequest = async (req, res, next) => {
       return res.status(404).json({ message: "Please fill out all the forms" });
     }
 
+    // Validate zip code format (5-digit)
+    const zipCodePattern = /^\d{5}$/;
+    if (!zipCodePattern.test(zipcode)) {
+      return res.status(400).json({ message: "Please enter a valid 5-digit zip code" });
+    }
+
+    // Validate phone number format (10-digit)
+    const phoneNumberPattern = /^\d{10}$/;
+    if (!phoneNumberPattern.test(phoneNumber)) {
+      return res.status(400).json({ message: "Please enter a valid 10-digit phone number" });
+    }
+
+    const currentDate = new Date();
+    const selectedDate = new Date(serviceDate);
+    if (selectedDate < currentDate) {
+      return res.status(400).json({ message: "Service date cannot be in the past" });
+    }
+
     const customer = await User.findById(customerId);
    
     if (!customer) {

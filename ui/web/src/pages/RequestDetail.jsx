@@ -102,9 +102,26 @@ export default function RequestDetail() {
         }
       };
 
+      useEffect(() => {
+        const scrollToElement = () => {
+          const element = document.getElementById("phoneNumberCard");
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        };
+       
+          scrollToElement();
+        
+      }, []);
+
 
   return (
     <Card className="mt-20 lg:w-3/4 sm:w-full xs:w-full mx-auto shadow-2xl rounded-2xl mb-10">
+       {formData.status === "Accepted" && formData.paid === true && (
+        <Alert className="mt-5" color="success">
+        Payment Done Successfully please got down to call the Customer
+      </Alert>
+       )}
     <h1 className="text-2xl text-center font-bold mt-10 mb-10 uppercase">
       {formData.service}
     </h1>
@@ -159,7 +176,7 @@ export default function RequestDetail() {
     </div>
   
     {formData.status === "Accepted" && formData.paid === true ? (
-      <Card className="w-full shadow-2xl rounded-2xl mb-10 p-5">
+      <Card className="w-full shadow-2xl rounded-2xl mb-10 p-5" id="phoneNumberCard">
         <h4 className="font-bold text-2xl text-center mb-5 mt-5">
           Customer Phone Number
         </h4>
@@ -168,7 +185,7 @@ export default function RequestDetail() {
             href={`tel:${formData.phoneNumber}`}
             className="text-3xl font-bold mt-5 mb-5 text-white p-5 rounded-3xl transition duration-300 bg-blue-800"
           >
-            Call the Customer
+            Call {formData.phoneNumber}
           </a>
         </div>
       </Card>
@@ -186,7 +203,7 @@ export default function RequestDetail() {
               className="w-16 h-16 rounded-full bg-green-500 flex justify-center items-center text-white text-2xl"
               onClick={() => {
                 handleStatusUpdate("Accepted")
-                setShowModal(true)
+                // setShowModal(true)
               }
               }
             >
@@ -206,11 +223,16 @@ export default function RequestDetail() {
 
     {formData.status === "Accepted" && formData.paid === false && (
         <>
-          <Button onClick={() => setShowModal(true)} color="success" className="mx-auto mt-5 mb-5">Pay 5$ for the Info</Button>
+         {clientSecret && (
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm id={id} />
+              </Elements>
+            )}
+          {/* <Button onClick={() => setShowModal(true)} color="success" className="mx-auto mt-5 mb-5">Pay 5$ for the Info</Button> */}
         </>
     )}
     
-    <Modal
+    {/* <Modal
         show={showModal}
         onClose={() => setShowModal(false)}
         popup
@@ -233,7 +255,7 @@ export default function RequestDetail() {
             )}
           </div>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     
   
     {publishError && (

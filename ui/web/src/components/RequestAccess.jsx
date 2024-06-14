@@ -50,6 +50,7 @@ export default function RequestAccess({ id, onClose }) {
 
       if (!res.ok) {
         setPublishError(data.message);
+        setFormSubmitted(false)
         return;
       }
       setPublishSuccess(true);

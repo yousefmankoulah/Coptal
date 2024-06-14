@@ -98,12 +98,21 @@ export default function CheckoutForm({ id }) {
     
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
-      <button disabled={isLoading || !stripe || !elements} id="submit" className="w-full mx-auto text-center mt-5 mb-5 bg-green-700 p-5 rounded-2xl text-white font-bold text-2xl">
+      <button
+        disabled={isLoading || !stripe || !elements}
+        id="submit"
+        className="w-full mx-auto text-center mt-5 mb-5 bg-green-700 p-5 rounded-2xl text-white font-bold text-2xl"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+      >
         <span id="button-text"> 
-          {isLoading ? (<div className="flex items-center mx-auto text-2xl text-center">
-                <Spinner />
-                <span className="ml-2 mr-2 mx-auto text-2xl">Loading...</span>
-              </div>) : "Pay $5"}
+          {isLoading ? (
+            <div className="flex items-center">
+              <Spinner />
+              <span className="ml-2">Loading...</span>
+            </div>
+          ) : (
+            "Pay $5"
+          )}
         </span>
       </button>
       {message && <Alert className="mt-5" color="success" id="payment-message">{message}</Alert>}
